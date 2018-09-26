@@ -4,7 +4,10 @@ import java.util.LinkedList;
 /***
  * A class that can contain crazy big numbers
  * @author Jamie Walder, Manta (insert last name), Justin Davis
- *
+ *Jamie Walder
+ *	• BigNumber( ) constructors
+	• BigNumber add (BigNumber)
+	• BigNumber subtract(BigNumber)
  */
 public class BigNumber {
 	//buffer that contains the digits of our BigNumber, 
