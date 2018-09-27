@@ -3,7 +3,7 @@ import java.util.LinkedList;
 
 /***
  * A class that can contain crazy big numbers
- * @author Jamie Walder, Manta (insert last name), Justin Davis
+ * @author Jamie Walder, Mantas (insert last name), Justin Davis
  *Jamie Walder
  *	• BigNumber( ) constructors
 	• BigNumber add (BigNumber)
@@ -55,7 +55,7 @@ public class BigNumber {
 		
 	}
 	/**@author Jamie Walder
-	 * creates a bignumber based off of a string of that number and then fills the buffer accordingly 
+	 * creates a big number based off of a string of that number and then fills the buffer accordingly 
 	 * @param number the string of the number that will be inputed
 	 * @throws IllegalInputException 
 	 */
@@ -99,7 +99,23 @@ public class BigNumber {
 			result.addFirst(9-it.next());
 		}
 		if(result.getLast()==10) {
-			return new BigNumber("0").add(new BigNumber().setBuffer(result));
+			Iterator<Integer> it2=result.descendingIterator();
+			LinkedList<Integer> result2=new LinkedList<Integer>();
+			result2.add(0);
+			it2.next();
+			int carry=1;
+			while(it2.hasNext()) {
+				int num=it2.next()+carry;
+				if(carry>0)carry--;
+				if(num>9) {
+					carry++;
+					num%=10;
+				}
+				
+				result2.addFirst(num);
+			}
+			return new BigNumber().setBuffer(result2);
+			//return new BigNumber(0).add(new BigNumber().setBuffer(result));
 		}
 		return new BigNumber().setBuffer(result);
 		
@@ -111,16 +127,18 @@ public class BigNumber {
 	 */
 	public BigNumber add(BigNumber num) {
 		//add padding to buffer if one isnt big enough
+		
 		int diff=this.buffer.size()-num.buffer.size();
 		BigNumber thisNum=this;
+		thisNum=thisNum.addPadding(thisNum, 1);
+		num=thisNum.addPadding(num, 1);
 		if(diff>0) {
 			num=addPadding(num,diff);
 		}
 		else {
 			thisNum=addPadding(thisNum,diff);
 		}
-		num=addPadding(num,1);
-		thisNum=addPadding(thisNum,1);
+		
 		Iterator<Integer> thisIt=thisNum.buffer.descendingIterator();
 		Iterator<Integer> numIt=num.buffer.descendingIterator();
 		LinkedList<Integer> result=new LinkedList<Integer>();
@@ -249,7 +267,6 @@ public class BigNumber {
 			it.remove();
 		}
 		buffer.addFirst(fillnum);
-		
 	}
 
 }

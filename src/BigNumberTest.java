@@ -8,17 +8,13 @@ class BigNumberTest {
 	BigNumber bn1,bn2;
 
 	
-	@Test
-	void test() {
-		testAdd();
-		testSub();
-		
-	}
+	
 	@Test
 	void testAdd() {
 		//test add
 				for(int i=-500;i<=500;i++) {
-					for(int j=-500;i<=500;i++) {
+					for(int j=-500;j<=500;j++) {
+						System.out.println(i+" "+j);
 						assert(i+j==Long.parseLong(new BigNumber(i).add(new BigNumber(j)).toString()));
 					}
 				}
