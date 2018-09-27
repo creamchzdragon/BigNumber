@@ -14,6 +14,8 @@ public class BigNumber {
 	//The buffer is read from left to right with the first digit(10^0) being the end of the array
 	//could be an linked list
 	//the buffer is base 10
+	//the buffer uses tens comliment for negative numbers
+	//the buffer is god
 	private LinkedList<Integer> buffer;
 	//default private constructor
 	private BigNumber() {}
@@ -224,6 +226,18 @@ public class BigNumber {
 			buffer.removeLast();
 			buffer.addFirst(fillnum);
 		}
+	}
+	public BigNumber multipy(BigNumber bigNumber) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public BigNumber divid(BigNumber bigNumber) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public BigNumber mod(BigNumber bigNumber) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
