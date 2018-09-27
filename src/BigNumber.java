@@ -119,6 +119,8 @@ public class BigNumber {
 		else {
 			thisNum=addPadding(thisNum,diff);
 		}
+		num=addPadding(num,1);
+		thisNum=addPadding(thisNum,1);
 		Iterator<Integer> thisIt=thisNum.buffer.descendingIterator();
 		Iterator<Integer> numIt=num.buffer.descendingIterator();
 		LinkedList<Integer> result=new LinkedList<Integer>();
@@ -139,8 +141,9 @@ public class BigNumber {
 			
 		}
 		
-		
-		return new BigNumber().setBuffer(result);
+		BigNumber bn=new BigNumber().setBuffer(result);
+		bn.clean();
+		return bn;
 	}
 	/**@author Jamie Walder
 	 * sets the buffer to a new buffer
@@ -238,6 +241,15 @@ public class BigNumber {
 	public BigNumber mod(BigNumber bigNumber) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	private void clean() {
+		int fillnum=buffer.getFirst()>4?9:0;
+		Iterator<Integer> it=buffer.iterator();
+		while(it.hasNext()&&it.next()==fillnum) {
+			it.remove();
+		}
+		buffer.addFirst(fillnum);
+		
 	}
 
 }
