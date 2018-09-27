@@ -15,11 +15,35 @@ public class BigNumber {
 	//could be an linked list
 	//the buffer is base 10
 	private LinkedList<Integer> buffer;
-	/***
+	//default private constructor
+	private BigNumber() {}
+	/**@author Jamie Walder
+	 * create a new big number based on a long
+	 * @param num number this big number will be based off of
+	 */
+	public BigNumber(long num) {
+		buffer=new LinkedList<Integer>();
+		boolean neg=num<0;
+		if(neg) {
+			num*=-1;
+		}
+		while(num>=10) {
+			buffer.addFirst((int)num%10);
+			num/=10;
+		}
+		buffer.addFirst((int)num);
+		if(neg) {
+			buffer=BigNumber.tensCompliment(this).buffer;
+			buffer.addFirst(9);
+		}
+		else {
+			buffer.addFirst(0);
+		}
+	}
+	/***@author Jamie Walder
 	 * creates a buffer with a number of digits, fills buffer with null
 	 * @param numberOfDigits the number of digits the number will have
 	 */
-	private BigNumber() {}
 	public BigNumber(int numberOfDigits, int fillNum) {
 		//adds 1 so that we can account for positive or negative
 		buffer=new LinkedList<Integer>();
@@ -28,7 +52,7 @@ public class BigNumber {
 		}
 		
 	}
-	/**
+	/**@author Jamie Walder
 	 * creates a bignumber based off of a string of that number and then fills the buffer accordingly 
 	 * @param number the string of the number that will be inputed
 	 * @throws IllegalInputException 
@@ -60,17 +84,29 @@ public class BigNumber {
 		}
 		
 	}
-	public BigNumber tensCompliment(BigNumber bn){
+	/**@author Jamie Walder
+	 * converts the given number to it's tens compliment
+	 * @param bn the number we want to convert to it's tens compliment
+	 * @return the result of the tens compliment
+	 */
+	public static BigNumber tensCompliment(BigNumber bn){
 		Iterator<Integer> it=bn.buffer.descendingIterator();
 		LinkedList<Integer> result=new LinkedList<>();
 		result.add(10-it.next());
 		while(it.hasNext()) {
 			result.addFirst(9-it.next());
 		}
+		if(result.getLast()==10) {
+			return new BigNumber("0").add(new BigNumber().setBuffer(result));
+		}
 		return new BigNumber().setBuffer(result);
 		
 	}
-	
+	/**@author Jamie Walder
+	 * adds two big numbers
+	 * @param num the number to be added to this number
+	 * @return the result of adding these two number
+	 */
 	public BigNumber add(BigNumber num) {
 		//add padding to buffer if one isnt big enough
 		int diff=this.buffer.size()-num.buffer.size();
@@ -104,15 +140,31 @@ public class BigNumber {
 		
 		return new BigNumber().setBuffer(result);
 	}
+	/**@author Jamie Walder
+	 * sets the buffer to a new buffer
+	 * @param buff the new buffer to be inserted
+	 * @return this BigNumber with the new buffer
+	 */
 	private BigNumber setBuffer(LinkedList<Integer> buff) {
 		this.buffer=buff;
 		return this;
 	}
+	/**@author Jamie Walder
+	 * subtract two big numbers
+	 * @param num the number to be subtracted from this number
+	 * @return the result of subtraction
+	 */
 	public BigNumber subtract(BigNumber num) {
 		return add(tensCompliment(num));
-		// TODO Auto-generated method stub
+		
 		
 	}
+	/**@author Jamie Walder
+	 * added padding to the big number on the left side
+	 * @param bn1 the bignumber to be padded
+	 * @param num the amount of digits to bad it by
+	 * @return the new big number after padding
+	 */
 	private BigNumber addPadding(BigNumber bn1,int num) {
 		if(num<0) {
 			num*=-1;
@@ -130,7 +182,7 @@ public class BigNumber {
 		
 		return bn1;
 	}
-	/** 
+	/** @author Jamie Walder
 	 * print stuff
 	 */
 	public String toString() {
@@ -146,6 +198,32 @@ public class BigNumber {
 			result+=it.next();
 		}
 		return result;
+	}
+	/**@author Jamie Walder
+	 * shift the buffer left
+	 * @param num the number of spaces to shift the buffer
+	 */
+	protected void shiftLeft(int num) {
+		for(int i=0;i<num;i++) {
+			buffer.addLast(0);
+		}
+	}
+	/**@author Jamie Walder
+	 * shift the buffer right
+	 * @param num the number of spaces to shift the buffer
+	 */
+	protected void shiftRight(int num) {
+		int fillnum;
+		if(buffer.getFirst()>4) {
+			fillnum=9;
+		}
+		else {
+			fillnum=0;
+		}
+		for(int i=0;i<num;i++) {
+			buffer.removeLast();
+			buffer.addFirst(fillnum);
+		}
 	}
 
 }
