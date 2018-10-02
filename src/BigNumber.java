@@ -276,12 +276,15 @@ public class BigNumber {
 	}
 	/**
 	 * @author Justin Davis
-	 * @param bigNumber
-	 * @return
+	 * Compares two big numbers to see if they are equal
+	 * @param bigNumber the big number being compared to this number
+	 * @return a boolean whether or not two big numbers are equal - true if equal, false if not
 	 */
 	public boolean equals(BigNumber bigNumber) {
 		boolean equal = true;
-		if(this.buffer)
+		if(this.compareTo(bigNumber) != 0) { //utilizes compareTo method
+			equal = false; //not equal - set to false
+		}
 		return equal;
 	}
 	/**
