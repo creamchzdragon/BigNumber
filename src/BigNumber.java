@@ -248,6 +248,12 @@ public class BigNumber {
 			buffer.addFirst(fillnum);
 		}
 	}
+	/**
+	 * @author Justin Davis
+	 * Multiplies two big numbers together
+	 * @param bigNumber Number we are multiplying our big number by
+	 * @return the product of two big numbers
+	 */
 	public BigNumber multipy(BigNumber bigNumber) {
 		// TODO Auto-generated method stub
 		return null;
@@ -267,6 +273,41 @@ public class BigNumber {
 			it.remove();
 		}
 		buffer.addFirst(fillnum);
+	}
+	/**
+	 * @author Justin Davis
+	 * @param bigNumber
+	 * @return
+	 */
+	public boolean equals(BigNumber bigNumber) {
+		boolean equal = true;
+		if(this.buffer)
+		return equal;
+	}
+	/**
+	 * @author Justin Davis
+	 * Compares two big numbers together
+	 * @param bigNumber the big number to be compared to this number
+	 * @return -1 if this big number is less than the number being compared, 0 if both numbers are equal, or 1 
+	 * if this number is larger than the number being compared
+	 */
+	public int compareTo(BigNumber bigNumber) {
+		return 1;
+	}
+	/**
+	 * @author Justin Davis
+	 * Negates our big number - if positive becomes negative; if negative becomes positive
+	 */
+	public void negate() {
+		
+	}
+	/**
+	 * @author Justin Davis
+	 * Returns the number of digits in the big number
+	 * @return the number of digits in our big number
+	 */
+	public int numDigits() {
+		return this.buffer.size();
 	}
 
 }
