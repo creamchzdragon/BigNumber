@@ -295,7 +295,43 @@ public class BigNumber {
 	 * if this number is larger than the number being compared
 	 */
 	public int compareTo(BigNumber bigNumber) {
-		return 1;
+		int result = 0;
+		int thisFirstNum = this.buffer.getFirst(); //first number for this big number - indicates sign
+		int thatFirstNum = bigNumber.buffer.getFirst(); //first number for bug number being compared - indicates sign
+		if ((thisFirstNum == 0 && thatFirstNum == 0) || (thisFirstNum == 9 && thatFirstNum == 9)) { //the big numbers are either both positive or both negative
+			int numberOfDigits = this.buffer.size();//number of digits in this big number
+			int difference = numberOfDigits - bigNumber.numDigits(); //the difference in number of digits
+			if (difference > 0) { //this big number has more digits
+				result = 1; //this big number is larger
+			}
+			else if (difference < 0) { //big number being compared has more digits
+				result = -1; //big number being compared is larger
+			}
+			else { //both big numbers have the same amount of digits - must now compare individual digits
+				boolean equal = true; //keeps track if the big numbers are equal - initially set to true
+				int index = 0;
+				while (index < numberOfDigits && equal) {
+					if (this.buffer.get(index) != bigNumber.buffer.get(index)) {
+						equal = false; //found two digits that are not the same - the big numbers are not equal
+						if (this.buffer.get(index) > bigNumber.buffer.get(index)) { //this big number digit is larger
+							result = 1; //this big number is larger
+						}
+						else { //the big number being compared has a larger digit
+							result = -1; //the big number being compared is larger
+						} //end if
+					} //end if
+				}
+			} //end if
+		}
+		else { //the big numbers do not have the same sign
+			if (thisFirstNum == 0) { //this big number is the positive number
+				result = 1; //this big number is larger
+			}
+			else { //this big number is a negative number
+				result = -1; //the big number being compared is larger
+			} //end if
+		} //end if
+		return result;
 	}
 	/**
 	 * @author Justin Davis
