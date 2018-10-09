@@ -160,7 +160,9 @@ public class BigNumber {
 		}
 		
 		BigNumber bn=new BigNumber().setBuffer(result);
+		System.out.println("result: " + bn.toString2());
 		bn.normalize();
+		System.out.println("normalized: " + bn.toString2());
 		return bn;
 	}
 	/**@author Jamie Walder
@@ -273,6 +275,9 @@ public class BigNumber {
 			it.remove();
 		}
 		if (fillnum == 0 && buffer.get(0) > 4) {
+			buffer.addFirst(fillnum);
+		}
+		if (fillnum == 9 && buffer.get(0) < 5) {
 			buffer.addFirst(fillnum);
 		}
 	}
