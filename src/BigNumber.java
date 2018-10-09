@@ -80,12 +80,11 @@ public class BigNumber {
 		if(neg) {
 			buffer=tensCompliment(this).buffer;
 			buffer.addFirst(9);
-			//System.out.println(buffer.toString()); //test line
 		}
 		else {
 			buffer.addFirst(0);
 		}
-		
+		normalize();
 	}
 	/**@author Jamie Walder
 	 * converts the given number to it's tens compliment
@@ -161,7 +160,7 @@ public class BigNumber {
 		}
 		
 		BigNumber bn=new BigNumber().setBuffer(result);
-		bn.clean();
+		bn.normalize();
 		return bn;
 	}
 	/**@author Jamie Walder
@@ -267,13 +266,15 @@ public class BigNumber {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	private void clean() {
+	private void normalize() {
 		int fillnum=buffer.getFirst()>4?9:0;
 		Iterator<Integer> it=buffer.iterator();
 		while(it.hasNext()&&it.next()==fillnum) {
 			it.remove();
 		}
-		buffer.addFirst(fillnum);
+		if (fillnum == 0 && buffer.get(0) > 4) {
+			buffer.addFirst(fillnum);
+		}
 	}
 	/**
 	 * @author Justin Davis
@@ -299,7 +300,7 @@ public class BigNumber {
 		int result = 0;
 		int thisFirstNum = this.buffer.getFirst(); //first number for this big number - indicates sign
 		int thatFirstNum = bigNumber.buffer.getFirst(); //first number for bug number being compared - indicates sign
-		if ((thisFirstNum == 0 && thatFirstNum == 0) || (thisFirstNum == 9 && thatFirstNum == 9)) { //the big numbers are either both positive or both negative
+		if ((thisFirstNum > 4 && thatFirstNum > 4) || (thisFirstNum == 0 && thatFirstNum == 0)) { //the big numbers are either both positive or both negative
 			int numberOfDigits = this.buffer.size(); //number of digits in this big number
 			int difference = numberOfDigits - bigNumber.numDigits(); //the difference in number of digits
 			if (difference > 0) { //this big number has more digits
@@ -342,7 +343,7 @@ public class BigNumber {
 	public void negate() {
 		if (sign() == 1) {
 			buffer = tensCompliment(this).buffer;
-			buffer.addFirst(9);
+			//buffer.addFirst(9);
 		}
 		else {
 			buffer = tensCompliment(this).buffer;
@@ -361,18 +362,17 @@ public class BigNumber {
 	}
 	/**
 	 * @author Justin Davis
-	 * Normalizes the big number.
-	 */
-	public void normalize() {
-		
-	}
-	/**
-	 * @author Justin Davis
 	 * Returns the number of digits in the big number
 	 * @return the number of digits in our big number
 	 */
 	public int numDigits() {
 		return this.buffer.size();
+	}
+	public String toString2() {
+		return buffer.toString();
+	}
+	public LinkedList getBuffer(){
+		return buffer;
 	}
 
 }
