@@ -7,10 +7,15 @@ public class InputDriver {
 			System.out.println(b);
 		}
 		
-		BigNumber a = new BigNumber("-450");
+		BigNumber a = new BigNumber("450");
 		System.out.println(a);
-		BigNumber c = new BigNumber("-550");
+		BigNumber c = new BigNumber("-450");
 		System.out.println(c);
-		System.out.println(a.toString().compareTo(c.toString()));
+		
+		a.negate();
+		System.out.println(a);
+		
+		c.negate();
+		System.out.println(c);
 	}
 }

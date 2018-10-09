@@ -76,10 +76,11 @@ public class BigNumber {
 				}
 			}
 		}
-	
+		
 		if(neg) {
 			buffer=tensCompliment(this).buffer;
 			buffer.addFirst(9);
+			//System.out.println(buffer.toString()); //test line
 		}
 		else {
 			buffer.addFirst(0);
@@ -299,7 +300,7 @@ public class BigNumber {
 		int thisFirstNum = this.buffer.getFirst(); //first number for this big number - indicates sign
 		int thatFirstNum = bigNumber.buffer.getFirst(); //first number for bug number being compared - indicates sign
 		if ((thisFirstNum == 0 && thatFirstNum == 0) || (thisFirstNum == 9 && thatFirstNum == 9)) { //the big numbers are either both positive or both negative
-			int numberOfDigits = this.buffer.size();//number of digits in this big number
+			int numberOfDigits = this.buffer.size(); //number of digits in this big number
 			int difference = numberOfDigits - bigNumber.numDigits(); //the difference in number of digits
 			if (difference > 0) { //this big number has more digits
 				result = 1; //this big number is larger
@@ -320,6 +321,7 @@ public class BigNumber {
 							result = -1; //the big number being compared is larger
 						} //end if
 					} //end if
+					index++;
 				}
 			} //end if
 		}
@@ -338,6 +340,30 @@ public class BigNumber {
 	 * Negates our big number - if positive becomes negative; if negative becomes positive
 	 */
 	public void negate() {
+		if (sign() == 1) {
+			buffer = tensCompliment(this).buffer;
+			buffer.addFirst(9);
+		}
+		else {
+			buffer = tensCompliment(this).buffer;
+		}
+	}
+	/**
+	 * @author Justin Davis
+	 * @return an int representing the sign of the big number; +1 if positive, -1 if negative
+	 */
+	public int sign() {
+		int sign = 1;
+		if (buffer.get(0) > 4) {
+			sign = -1;
+		}
+		return sign;
+	}
+	/**
+	 * @author Justin Davis
+	 * Normalizes the big number.
+	 */
+	public void normalize() {
 		
 	}
 	/**
