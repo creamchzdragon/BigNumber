@@ -3,7 +3,7 @@ import java.util.LinkedList;
 
 /***
  * A class that can contain crazy big numbers
- * @author Jamie Walder, Mantas (insert last name), Justin Davis
+ * @author Jamie Walder, Mantas Pileckis, Justin Davis
  *Jamie Walder
  *	• BigNumber( ) constructors
 	• BigNumber add (BigNumber)
