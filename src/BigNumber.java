@@ -52,7 +52,7 @@ public class BigNumber {
 		for(int i=0;i<numberOfDigits;i++) {
 			buffer.add(fillNum);
 		}
-		
+
 	}
 	/**@author Jamie Walder
 	 * creates a big number based off of a string of that number and then fills the buffer accordingly 
@@ -76,7 +76,7 @@ public class BigNumber {
 				}
 			}
 		}
-		
+
 		if(neg) {
 			buffer=tensCompliment(this).buffer;
 			buffer.addFirst(9);
@@ -111,14 +111,14 @@ public class BigNumber {
 					carry++;
 					num%=10;
 				}
-				
+
 				result2.addFirst(num);
 			}
 			return new BigNumber().setBuffer(result2);
 			//return new BigNumber(0).add(new BigNumber().setBuffer(result));
 		}
 		return new BigNumber().setBuffer(result);
-		
+
 	}
 	/**@author Jamie Walder
 	 * adds two big numbers
@@ -127,7 +127,7 @@ public class BigNumber {
 	 */
 	public BigNumber add(BigNumber num) {
 		//add padding to buffer if one isnt big enough
-		
+
 		int diff=this.buffer.size()-num.buffer.size();
 		BigNumber thisNum=this;
 		thisNum=thisNum.addPadding(thisNum, 1);
@@ -138,13 +138,13 @@ public class BigNumber {
 		else {
 			thisNum=addPadding(thisNum,diff);
 		}
-		
+
 		Iterator<Integer> thisIt=thisNum.buffer.descendingIterator();
 		Iterator<Integer> numIt=num.buffer.descendingIterator();
 		LinkedList<Integer> result=new LinkedList<Integer>();
 		int carry=0;
 		while(thisIt.hasNext()) {
-			
+
 			int tempR=thisIt.next()+numIt.next()+carry;
 			if(carry>0) {
 				carry--;
@@ -153,16 +153,14 @@ public class BigNumber {
 				carry++;
 				tempR%=10;
 			}
-			
+
 			result.addFirst(tempR);
-			
-			
+
+
 		}
-		
+
 		BigNumber bn=new BigNumber().setBuffer(result);
-		System.out.println("result: " + bn.toString2());
 		bn.normalize();
-		System.out.println("normalized: " + bn.toString2());
 		return bn;
 	}
 	/**@author Jamie Walder
@@ -181,8 +179,8 @@ public class BigNumber {
 	 */
 	public BigNumber subtract(BigNumber num) {
 		return add(tensCompliment(num));
-		
-		
+
+
 	}
 	/**@author Jamie Walder
 	 * added padding to the big number on the left side
@@ -204,7 +202,7 @@ public class BigNumber {
 		for(int i=0;i<num;i++) {
 			bn1.buffer.addFirst(numAdded);	
 		}
-		
+
 		return bn1;
 	}
 	/** @author Jamie Walder
@@ -218,7 +216,7 @@ public class BigNumber {
 			result+="-";
 		}
 		Iterator<Integer> it= bn.buffer.iterator();
-		
+
 		while(it.hasNext()) {
 			result+=it.next();
 		}
@@ -257,8 +255,36 @@ public class BigNumber {
 	 * @return the product of two big numbers
 	 */
 	public BigNumber multipy(BigNumber bigNumber) {
-		// TODO Auto-generated method stub
-		return null;
+		BigNumber result, tempResult;
+		result = tempResult = new BigNumber(0);
+		BigNumber thisTemp = this;
+		BigNumber thatTemp = bigNumber;
+		boolean posResult = true;
+		if ((this.sign() < 0 && bigNumber.sign() > 0) || (this.sign() > 0 && bigNumber.sign() < 0)) {
+			posResult = false;
+		}
+		if (this.sign() < 1) {
+			thisTemp = tensCompliment(this);
+		}
+		if (bigNumber.sign() < 1) {
+			thatTemp = tensCompliment(bigNumber);
+		}
+		int size = thatTemp.numDigits();
+		for (int i = 0; i < size; i++) {
+			tempResult = new BigNumber(0);
+			int value = (int) thatTemp.getBuffer().get(i);
+			if (value != 0) {
+				for (int j = 0; j < value; j++) {
+					tempResult = tempResult.add(thisTemp);
+				}
+				tempResult.shiftLeft(size - (i + 1));
+			}
+			result = result.add(tempResult);
+		}
+		if (!posResult) {
+			result.negate();
+		}
+		return result;
 	}
 	public BigNumber divid(BigNumber bigNumber) {
 		// TODO Auto-generated method stub
@@ -346,7 +372,7 @@ public class BigNumber {
 	 * Negates our big number - if positive becomes negative; if negative becomes positive
 	 */
 	public void negate() {
-		if (sign() == 1) {
+		if (sign() > 0) {
 			buffer = tensCompliment(this).buffer;
 			//buffer.addFirst(9);
 		}
