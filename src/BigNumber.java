@@ -292,35 +292,44 @@ public class BigNumber {
 	 * @return 
 	 */
 	public DivisionReturn divide(BigNumber bigNumber) {
-		DivisionReturn temp = null;
-		BigNumber thisTemp = this;
-		BigNumber subTemp = this;
-		BigNumber remainder = new BigNumber(0);
-		BigNumber quotient = new BigNumber(1);
-		boolean flag = true;
+		DivisionReturn temp = null; //temp holder for new DivisionReturn Object 
+		BigNumber thisTemp = this; //temp holder for the original value
+		BigNumber subTemp = this; //temp holder for the original value post subtraction (while loop)
+		BigNumber remainder = new BigNumber(0); //base case for remainder being 0
+		BigNumber quotient = new BigNumber(1); //base case for quotient being 1
+		boolean flag = true; //flag for the loop
+		//if the input and the bigNumber are they same, return base case
 		if(this.compareTo(bigNumber) == 0) {
 			temp = new DivisionReturn(remainder, quotient);
 			flag = false;
 		}
+		//if the input is larger than the bigNumber, return original value as remainder (mod) and base case for quotient
 		else if (this.compareTo(bigNumber) == -1) {
 			temp = new DivisionReturn(thisTemp, new BigNumber(0));
 			flag = false;
 		}
+		//if the bigNumber is divisible by the input, loop until flag is triggered
 		else {
+			//counter for the loop
 			int counter = 0;
 			while(flag) {
+				//reassign subTemp to original - input until flag is triggered
 				subTemp = subTemp.subtract(bigNumber);
+				//increment the counter 
 				counter++;
+				//if subTemp is finally equal to the input, return base case of remainder and the counter for quotient
 				if(subTemp.compareTo(bigNumber) == 0) {
 					temp = new DivisionReturn(remainder, new BigNumber(counter));
 					flag = false;
 				}
+				//if subTemp is smaller than the input, return remainder as the input, and the counter for the quotient
 				else if (subTemp.compareTo(bigNumber) == -1) {
 					temp = new DivisionReturn(subTemp, new BigNumber(counter));
 					flag = false;
 				}
 			}
 		}
+		//return DivisionReturn Object -> call .getMod() and getQuotient on return to get appropriate values.
 		return temp;
 	}
 	
