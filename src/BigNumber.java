@@ -274,7 +274,7 @@ public class BigNumber {
 		 * Method to get the remainder
 		 * @return The remainder post division
 		 */
-		public BigNumber getRemainder() {
+		public BigNumber getMod() {
 			return remainder;
 		}
 		/**
@@ -294,15 +294,82 @@ public class BigNumber {
 	public DivisionReturn divide(BigNumber bigNumber) {
 		DivisionReturn temp = null;
 		BigNumber thisTemp = this;
-		BigNumber remainder;
-		BigNumber quotient;
-		
+		BigNumber subTemp = this;
+		BigNumber remainder = new BigNumber(0);
+		BigNumber quotient = new BigNumber(1);
+		boolean flag = true;
+		if(this.compareTo(bigNumber) == 0) {
+			temp = new DivisionReturn(remainder, quotient);
+			flag = false;
+		}
+		else if (this.compareTo(bigNumber) == -1) {
+			temp = new DivisionReturn(thisTemp, new BigNumber(0));
+			flag = false;
+		}
+		else {
+			while(flag) {
+				int counter = 0;
+				subTemp = subTemp.subtract(bigNumber);
+				counter++;
+				if(subTemp.compareTo(bigNumber) == 0) {
+					temp = new DivisionReturn(remainder, new BigNumber(counter));
+					flag = false;
+				}
+				else if (subTemp.compareTo(bigNumber) == -1) {
+					temp = new DivisionReturn(subTemp, new BigNumber(counter));
+					flag = false;
+				}
+			}
+		}
 		return temp;
 	}
-	public BigNumber mod(BigNumber bigNumber) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public int numDigits() {
+		return this.buffer.size();
 	}
+	
+	public int compareTo(BigNumber bigNumber) {
+		int result = 0;
+		int thisFirstNum = this.buffer.getFirst(); //first number for this big number - indicates sign
+		int thatFirstNum = bigNumber.buffer.getFirst(); //first number for bug number being compared - indicates sign
+		if ((thisFirstNum > 4 && thatFirstNum > 4) || (thisFirstNum == 0 && thatFirstNum == 0)) { //the big numbers are either both positive or both negative
+			int numberOfDigits = this.buffer.size(); //number of digits in this big number
+			int difference = numberOfDigits - bigNumber.numDigits(); //the difference in number of digits
+			if (difference > 0) { //this big number has more digits
+				result = 1; //this big number is larger
+			}
+			else if (difference < 0) { //big number being compared has more digits
+				result = -1; //big number being compared is larger
+			}
+			else { //both big numbers have the same amount of digits - must now compare individual digits
+				boolean equal = true; //keeps track if the big numbers are equal - initially set to true
+				int index = 0;
+				while (index < numberOfDigits && equal) {
+					if (this.buffer.get(index) != bigNumber.buffer.get(index)) {
+						equal = false; //found two digits that are not the same - the big numbers are not equal
+						if (this.buffer.get(index) > bigNumber.buffer.get(index)) { //this big number digit is larger
+							result = 1; //this big number is larger
+						}
+						else { //the big number being compared has a larger digit
+							result = -1; //the big number being compared is larger
+						} //end if
+					} //end if
+					index++;
+				}
+			} //end if
+		}
+		else { //the big numbers do not have the same sign
+			if (thisFirstNum == 0) { //this big number is the positive number
+				result = 1; //this big number is larger
+			}
+			else { //this big number is a negative number
+				result = -1; //the big number being compared is larger
+			} //end if
+		} //end if
+		return result;
+	}
+	
+
 	private void clean() {
 		int fillnum=buffer.getFirst()>4?9:0;
 		Iterator<Integer> it=buffer.iterator();
