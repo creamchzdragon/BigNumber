@@ -307,8 +307,8 @@ public class BigNumber {
 			flag = false;
 		}
 		else {
+			int counter = 0;
 			while(flag) {
-				int counter = 0;
 				subTemp = subTemp.subtract(bigNumber);
 				counter++;
 				if(subTemp.compareTo(bigNumber) == 0) {
