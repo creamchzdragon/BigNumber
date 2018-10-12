@@ -252,9 +252,52 @@ public class BigNumber {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	public BigNumber divid(BigNumber bigNumber) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	/**
+	 * @author Mantas Pileckis
+	 * Inner class for Division method
+	 */
+	public class DivisionReturn {
+		BigNumber remainder;
+		BigNumber quotient;
+		/**
+		 * Constructor for Division Return
+		 * @param remainder The remainder post division
+		 * @param quotient The quotient post division
+		 * @param
+		 */
+		public DivisionReturn(BigNumber remainder, BigNumber quotient) {
+			this.remainder = remainder;
+			this.quotient = quotient;
+		}
+		/**
+		 * Method to get the remainder
+		 * @return The remainder post division
+		 */
+		public BigNumber getRemainder() {
+			return remainder;
+		}
+		/**
+		 * Method to get the quotient
+		 * @return the quotient post division
+		 */
+		public BigNumber getQuotient() {
+			return quotient;
+		}
+	}
+	/**
+	 * @author Mantas Pileckis
+	 * Divides two bigNumbers
+	 * @param bigNumber Number we are dividing our big number by
+	 * @return 
+	 */
+	public DivisionReturn divide(BigNumber bigNumber) {
+		DivisionReturn temp = null;
+		BigNumber thisTemp = this;
+		BigNumber remainder;
+		BigNumber quotient;
+		
+		return temp;
 	}
 	public BigNumber mod(BigNumber bigNumber) {
 		// TODO Auto-generated method stub
