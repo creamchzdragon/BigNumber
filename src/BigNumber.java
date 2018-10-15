@@ -52,7 +52,7 @@ public class BigNumber {
 		for(int i=0;i<numberOfDigits;i++) {
 			buffer.add(fillNum);
 		}
-		
+
 	}
 	/**@author Jamie Walder
 	 * creates a big number based off of a string of that number and then fills the buffer accordingly 
@@ -76,7 +76,7 @@ public class BigNumber {
 				}
 			}
 		}
-	
+
 		if(neg) {
 			buffer=tensCompliment(this).buffer;
 			buffer.addFirst(9);
@@ -84,7 +84,7 @@ public class BigNumber {
 		else {
 			buffer.addFirst(0);
 		}
-		
+
 	}
 	/**@author Jamie Walder
 	 * converts the given number to it's tens compliment
@@ -111,14 +111,14 @@ public class BigNumber {
 					carry++;
 					num%=10;
 				}
-				
+
 				result2.addFirst(num);
 			}
 			return new BigNumber().setBuffer(result2);
 			//return new BigNumber(0).add(new BigNumber().setBuffer(result));
 		}
 		return new BigNumber().setBuffer(result);
-		
+
 	}
 	/**@author Jamie Walder
 	 * adds two big numbers
@@ -127,7 +127,7 @@ public class BigNumber {
 	 */
 	public BigNumber add(BigNumber num) {
 		//add padding to buffer if one isnt big enough
-		
+
 		int diff=this.buffer.size()-num.buffer.size();
 		BigNumber thisNum=this;
 		thisNum=thisNum.addPadding(thisNum, 1);
@@ -138,13 +138,13 @@ public class BigNumber {
 		else {
 			thisNum=addPadding(thisNum,diff);
 		}
-		
+
 		Iterator<Integer> thisIt=thisNum.buffer.descendingIterator();
 		Iterator<Integer> numIt=num.buffer.descendingIterator();
 		LinkedList<Integer> result=new LinkedList<Integer>();
 		int carry=0;
 		while(thisIt.hasNext()) {
-			
+
 			int tempR=thisIt.next()+numIt.next()+carry;
 			if(carry>0) {
 				carry--;
@@ -153,12 +153,12 @@ public class BigNumber {
 				carry++;
 				tempR%=10;
 			}
-			
+
 			result.addFirst(tempR);
-			
-			
+
+
 		}
-		
+
 		BigNumber bn=new BigNumber().setBuffer(result);
 		bn.clean();
 		return bn;
@@ -179,8 +179,8 @@ public class BigNumber {
 	 */
 	public BigNumber subtract(BigNumber num) {
 		return add(tensCompliment(num));
-		
-		
+
+
 	}
 	/**@author Jamie Walder
 	 * added padding to the big number on the left side
@@ -202,7 +202,7 @@ public class BigNumber {
 		for(int i=0;i<num;i++) {
 			bn1.buffer.addFirst(numAdded);	
 		}
-		
+
 		return bn1;
 	}
 	/** @author Jamie Walder
@@ -216,7 +216,7 @@ public class BigNumber {
 			result+="-";
 		}
 		Iterator<Integer> it= bn.buffer.iterator();
-		
+
 		while(it.hasNext()) {
 			result+=it.next();
 		}
@@ -252,7 +252,7 @@ public class BigNumber {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	/**
 	 * @author Mantas Pileckis
 	 * Inner class for Division method
@@ -285,6 +285,7 @@ public class BigNumber {
 			return quotient;
 		}
 	}
+
 	/**
 	 * @author Mantas Pileckis
 	 * Divides two bigNumbers
@@ -332,11 +333,11 @@ public class BigNumber {
 		//return DivisionReturn Object -> call .getMod() and getQuotient on return to get appropriate values.
 		return temp;
 	}
-	
+
 	public int numDigits() {
 		return this.buffer.size();
 	}
-	
+
 	public int compareTo(BigNumber bigNumber) {
 		int result = 0;
 		int thisFirstNum = this.buffer.getFirst(); //first number for this big number - indicates sign
@@ -377,7 +378,7 @@ public class BigNumber {
 		} //end if
 		return result;
 	}
-	
+
 
 	private void clean() {
 		int fillnum=buffer.getFirst()>4?9:0;
@@ -387,5 +388,122 @@ public class BigNumber {
 		}
 		buffer.addFirst(fillnum);
 	}
+
+
+
+
+
+	public DivisionReturn fullDivide(BigNumber bigNumber) {
+		DivisionReturn temp = null; //temp holder for new DivisionReturn Object 
+		BigNumber thisTemp = this; //temp holder for the original value
+		BigNumber subTemp = this; //temp holder for the original value post subtraction (while loop)
+		BigNumber remainder = new BigNumber(0); //base case for remainder being 0
+		BigNumber quotient = new BigNumber(1); //base case for quotient being 1
+		boolean flag = true; //flag for the loop
+		//if the input and the bigNumber are they same, return base case
+		if(this.compareTo(bigNumber) == 0) {
+			temp = new DivisionReturn(remainder, quotient);
+			flag = false;
+		}
+		//if the input is larger than the bigNumber, return original value as remainder (mod) and base case for quotient
+		else if (this.compareTo(bigNumber) == -1) {
+			temp = new DivisionReturn(thisTemp, new BigNumber(0));
+			flag = false;
+		}
+
+		else {
+			BigNumber tempOriginal = this;
+			BigNumber tempDivisor = bigNumber;
+			BigNumber result = new BigNumber(0);
+			int ammount = this.numDigits()-bigNumber.numDigits();
+			tempDivisor.shiftLeft(ammount-1);
+			int counter = 0;
+			boolean finished = false;
+			while(tempOriginal.compareTo(tempDivisor) == 1  || (tempOriginal.subtract(tempDivisor)).compareTo(tempDivisor) == -1) {
+				
+				System.out.println("original " +tempOriginal);
+				System.out.println("subtract " +tempDivisor);
+
+
+				if(tempOriginal.subtract(tempDivisor).sign() < 0) {
+					
+					tempDivisor.buffer.removeLast();
+					tempOriginal = tempOriginal.subtract(tempDivisor);
+					
+				}
+				else {
+					tempOriginal = tempOriginal.subtract(tempDivisor);
+					//counter++;
+				}
+
+				counter++;
+
+				System.out.println("post-sub " +tempOriginal);
+				System.out.println(counter);
+
+				if (tempOriginal.compareTo(tempDivisor) == -1) {
+					
+					System.out.println("add the carry " + counter);
+					System.out.println();
+					
+					result.buffer.add(counter);
+					tempDivisor.buffer.removeLast();
+					counter = 0;
+				}
+
+				else if(tempOriginal.compareTo(tempDivisor) == 0) {
+					
+					//counter = 0;
+					result.buffer.add(0);
+					
+					System.out.println("add the carry xx " + counter);
+					System.out.println("DONE!!!!!!!!!!!!!!!!");
+					System.out.println();
+					
+				}
+
+
+				System.out.println(result);
+			}
+			//result.shiftLeft(1);
+			result.normalize();
+			temp = new DivisionReturn(tempOriginal, result);
+
+
+		}
+		return temp;
+	}
+
+
+
+	private void normalize() {
+		int fillnum=buffer.getFirst()>4?9:0;
+		Iterator<Integer> it=buffer.iterator();
+		while(it.hasNext()&&it.next()==fillnum) {
+			it.remove();
+		}
+		if (fillnum == 0 && buffer.get(0) > 4) {
+			buffer.addFirst(fillnum);
+		}
+		if (fillnum == 9 && buffer.get(0) < 5) {
+			buffer.addFirst(fillnum);
+		}
+	}
+
+
+
+
+	public LinkedList getBuffer(){
+		return buffer;
+	}
+
+	public int sign() {
+		int sign = 1;
+		if (buffer.get(0) > 4) {
+			sign = -1;
+		}
+		return sign;
+	}
+
 
 }
