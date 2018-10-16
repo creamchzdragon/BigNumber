@@ -484,7 +484,6 @@ public class BigNumber {
 		//if the input is larger than the bigNumber, return original value as remainder (mod) and base case for quotient
 		else if (this.compareTo(bigNumber) == -1) {
 			temp = new DivisionReturn(this, new BigNumber(0));
-			System.out.println("------------");
 		}
 
 		else {
@@ -508,9 +507,8 @@ public class BigNumber {
 					System.out.println("result: " +remainder);
 					System.out.println("------------");
 					counter++;
-					i++;
 				}
-				tempQuotient.buffer.removeLast();
+				//tempQuotient.buffer.removeLast();
 
 				System.out.println(counter);
 				result.buffer.add(counter);
