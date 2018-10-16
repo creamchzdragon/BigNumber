@@ -286,14 +286,134 @@ public class BigNumber {
 		}
 		return result;
 	}
-	public BigNumber divid(BigNumber bigNumber) {
-		// TODO Auto-generated method stub
-		return null;
+	/**
+	 * @author Mantas Pileckis
+	 * Inner class for Division method
+	 */
+	public class DivisionReturn {
+		BigNumber remainder;
+		BigNumber quotient;
+		/**
+		 * Constructor for Division Return
+		 * @param remainder The remainder post division
+		 * @param quotient The quotient post division
+		 * @param
+		 */
+		public DivisionReturn(BigNumber remainder, BigNumber quotient) {
+			this.remainder = remainder;
+			this.quotient = quotient;
+		}
+		/**
+		 * Method to get the remainder
+		 * @return The remainder post division
+		 */
+		public BigNumber getMod() {
+			return remainder;
+		}
+		/**
+		 * Method to get the quotient
+		 * @return the quotient post division
+		 */
+		public BigNumber getQuotient() {
+			return quotient;
+		}
 	}
-	public BigNumber mod(BigNumber bigNumber) {
-		// TODO Auto-generated method stub
-		return null;
+
+	/**
+	 * @author Mantas Pileckis
+	 * Divides two bigNumbers
+	 * @param bigNumber Number we are dividing our big number by
+	 * @return 
+	 */
+	public DivisionReturn divide(BigNumber bigNumber) {
+		DivisionReturn temp = null; //temp holder for new DivisionReturn Object 
+		BigNumber remainder = this; //base case for remainder being 0
+		BigNumber quotient = bigNumber; //base case for quotient being 1
+		boolean negative = false; //boolean flag to check if any numbers were negative
+
+		//Check for negative, if so negate it
+		if(bigNumber.sign() == -1) {
+			bigNumber.negate();
+			negative = true;
+		}
+
+		//check for negative, if so negate it
+		if(this.sign() == -1) {
+			this.negate();
+			negative = true;
+		}
+		//If numbers are the same, return default case
+		if(this.compareTo(bigNumber) == 0) {
+			temp = new DivisionReturn(new BigNumber(0), new BigNumber(1));
+
+		}
+
+		//if the input is larger than the bigNumber, return original value as remainder (mod) and base case for quotient
+		else if (this.compareTo(bigNumber) == -1) {
+			temp = new DivisionReturn(this, new BigNumber(0));
+		}
+
+		else {
+			BigNumber result = new BigNumber(0);
+			int ammount = 0;
+			int counter = 0;
+			BigNumber original  = new BigNumber(bigNumber.toString());
+			original.normalize();
+			BigNumber tempDivisor  = new BigNumber(bigNumber.toString());
+
+			while(remainder.compareTo(original) == 0 || remainder.compareTo(original) == 1 && ((new BigNumber(remainder.toString()).subtract(original)).sign() == 1) ) {
+				tempDivisor  = new BigNumber(bigNumber.toString());
+				ammount = (remainder.numDigits()-tempDivisor.numDigits());
+				tempDivisor.shiftLeft(ammount+1);
+
+				if(((new BigNumber(remainder.toString()).subtract(tempDivisor)).sign() == -1)) {
+
+					tempDivisor  = new BigNumber(bigNumber.toString());
+					ammount = (remainder.numDigits()-tempDivisor.numDigits());
+					tempDivisor.shiftLeft(ammount);
+
+				}
+				while(((new BigNumber(remainder.toString()).subtract(tempDivisor)).sign() == 1)) {
+					remainder = remainder.subtract(tempDivisor);
+					counter++;			
+				}
+				result.buffer.add(counter);
+				counter = 0;
+
+				if(remainder.compareTo(new BigNumber(0)) == -1) {
+					result.shiftLeft(ammount);
+				}
+			}
+			tempDivisor  = new BigNumber(bigNumber.toString());
+
+			if(negative) {
+				result.negate();
+			}
+			temp = new DivisionReturn(remainder, result);
+
+
+		}
+		return temp;
 	}
+
+	/**
+	 * Efficiency black hole...
+	 * @author Mantas Pileckis
+	 */
+
+	public BigNumber factor(BigNumber bigNumber) {
+		BigNumber result = bigNumber;
+		for(long factor = 2; new BigNumber(factor * factor).compareTo(bigNumber) == -1; factor++ ) {
+			System.out.println(factor);
+			while(bigNumber.divide(new BigNumber(factor)).getMod().compareTo(new BigNumber(0)) == -1) {
+				result = result.divide(new BigNumber(factor)).getQuotient();
+				System.out.println("maybe");
+			}
+
+		}
+		return result;
+	}
+
 	private void normalize() {
 		int fillnum=buffer.getFirst()>4?9:0;
 		Iterator<Integer> it=buffer.iterator();
