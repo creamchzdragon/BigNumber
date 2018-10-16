@@ -395,63 +395,59 @@ public class BigNumber {
 
 	public DivisionReturn fullDivide(BigNumber bigNumber) {
 		DivisionReturn temp = null; //temp holder for new DivisionReturn Object 
-		BigNumber thisTemp = this; //temp holder for the original value
-		BigNumber subTemp = this; //temp holder for the original value post subtraction (while loop)
-		BigNumber remainder = new BigNumber(0); //base case for remainder being 0
-		BigNumber quotient = new BigNumber(1); //base case for quotient being 1
-		boolean flag = true; //flag for the loop
+		BigNumber remainder = this; //base case for remainder being 0
+		BigNumber quotient = bigNumber; //base case for quotient being 1
 		//if the input and the bigNumber are they same, return base case
+		
 		if(this.compareTo(bigNumber) == 0) {
-			temp = new DivisionReturn(remainder, quotient);
-			flag = false;
+			temp = new DivisionReturn(new BigNumber(0), new BigNumber(1));
+			
 		}
+		
 		//if the input is larger than the bigNumber, return original value as remainder (mod) and base case for quotient
 		else if (this.compareTo(bigNumber) == -1) {
-			temp = new DivisionReturn(thisTemp, new BigNumber(0));
-			flag = false;
+			temp = new DivisionReturn(this, new BigNumber(0));
 		}
 
 		else {
-			BigNumber tempOriginal = this;
-			BigNumber tempDivisor = bigNumber;
 			BigNumber result = new BigNumber(0);
 			int ammount = this.numDigits()-bigNumber.numDigits();
-			tempDivisor.shiftLeft(ammount-1);
+			quotient.shiftLeft(ammount-1);
 			int counter = 0;
 			boolean finished = false;
-			while(tempOriginal.compareTo(tempDivisor) == 1  || (tempOriginal.subtract(tempDivisor)).compareTo(tempDivisor) == -1) {
+			//while init is bigger than divisor OR init-divisor 
+			while(remainder.compareTo(quotient) == 1  || (remainder.subtract(quotient)).compareTo(quotient) == -1) {
 				
-				System.out.println("original " +tempOriginal);
-				System.out.println("subtract " +tempDivisor);
+				System.out.println("original " +remainder);
+				System.out.println("subtract " +quotient);
 
-
-				if(tempOriginal.subtract(tempDivisor).sign() < 0) {
-					
-					tempDivisor.buffer.removeLast();
-					tempOriginal = tempOriginal.subtract(tempDivisor);
-					
+				//Is remainder-quotient a possitive number ?
+				if(remainder.subtract(quotient).sign() < 0) {
+					quotient.buffer.removeLast();
+					remainder = remainder.subtract(quotient);	
 				}
 				else {
-					tempOriginal = tempOriginal.subtract(tempDivisor);
+					remainder = remainder.subtract(quotient);
 					//counter++;
 				}
-
 				counter++;
 
-				System.out.println("post-sub " +tempOriginal);
+				System.out.println("post-sub " +remainder);
 				System.out.println(counter);
-
-				if (tempOriginal.compareTo(tempDivisor) == -1) {
+				
+				//is quotient bigger than the remainder ?
+				if (remainder.compareTo(quotient) == -1) {
 					
 					System.out.println("add the carry " + counter);
 					System.out.println();
 					
 					result.buffer.add(counter);
-					tempDivisor.buffer.removeLast();
+					//tempDivisor.buffer.removeLast();
+					//tempDivisor.shiftRight(1);
 					counter = 0;
 				}
-
-				else if(tempOriginal.compareTo(tempDivisor) == 0) {
+				//Is remainder the same as quotient ?
+				else if(remainder.compareTo(quotient) == 0) {
 					
 					//counter = 0;
 					result.buffer.add(0);
@@ -467,7 +463,67 @@ public class BigNumber {
 			}
 			//result.shiftLeft(1);
 			result.normalize();
-			temp = new DivisionReturn(tempOriginal, result);
+			temp = new DivisionReturn(remainder, result);
+
+
+		}
+		return temp;
+	}
+	
+	public DivisionReturn fullDivide2(BigNumber bigNumber) {
+		DivisionReturn temp = null; //temp holder for new DivisionReturn Object 
+		BigNumber remainder = this; //base case for remainder being 0
+		BigNumber quotient = bigNumber; //base case for quotient being 1
+		//if the input and the bigNumber are they same, return base case
+		
+		if(this.compareTo(bigNumber) == 0) {
+			temp = new DivisionReturn(new BigNumber(0), new BigNumber(1));
+			
+		}
+		
+		//if the input is larger than the bigNumber, return original value as remainder (mod) and base case for quotient
+		else if (this.compareTo(bigNumber) == -1) {
+			temp = new DivisionReturn(this, new BigNumber(0));
+			System.out.println("------------");
+		}
+
+		else {
+			BigNumber result = new BigNumber(0);
+			int ammount = -1;
+			int counter = 0;
+			int i = 0;
+			//while init is bigger than divisor 
+			while(remainder.compareTo(bigNumber) == 1 && i<5) {
+				i++;
+				ammount = remainder.numDigits()-bigNumber.numDigits();
+				BigNumber tempQuotient = quotient;
+				tempQuotient.shiftLeft(ammount);
+				System.out.println("remainder " + remainder);
+				System.out.println("quotient " + tempQuotient);
+				
+				//System.out.println("result: " +remainder);
+				
+				while(remainder.compareTo(tempQuotient) == 1) {
+					remainder = remainder.subtract(tempQuotient);
+					System.out.println("result: " +remainder);
+					System.out.println("------------");
+					counter++;
+					i++;
+				}
+				tempQuotient.buffer.removeLast();
+
+				System.out.println(counter);
+				result.buffer.add(counter);
+				counter = 0;
+				//if(remainder.compareTo(tempQuotient) == -1) {
+				//	
+				//}
+				
+				//System.out.println(result);
+			}
+			//result.shiftLeft(1);
+			//result.normalize();
+			temp = new DivisionReturn(remainder, result);
 
 
 		}

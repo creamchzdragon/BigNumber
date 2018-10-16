@@ -2,13 +2,13 @@
 public class InputDriver {
 	public static void main(String[] args) {
 
-		BigNumber a=new BigNumber("123465346565445612");
-		BigNumber b= new BigNumber("3");
+		BigNumber a=new BigNumber("150");
+		BigNumber b= new BigNumber("11");
 		BigNumber.DivisionReturn result;
 		
 
 		
-			result = a.fullDivide(b);
+			result = a.fullDivide2(b);
 			//result = a.divide(b);
 			System.out.println("Mod " + result.getMod());
 		System.out.println("Quotient " + result.getQuotient());
