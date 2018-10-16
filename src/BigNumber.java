@@ -358,7 +358,7 @@ public class BigNumber {
 			int ammount = 0;
 			int counter = 0;
 			BigNumber original  = new BigNumber(bigNumber.toString());
-			original.normalize();
+			//original.normalize(); remove
 			BigNumber tempDivisor  = new BigNumber(bigNumber.toString());
 
 			while(remainder.compareTo(original) == 0 || remainder.compareTo(original) == 1 && ((new BigNumber(remainder.toString()).subtract(original)).sign() == 1) ) {
@@ -449,11 +449,12 @@ public class BigNumber {
 	 */
 	public int compareTo(BigNumber bigNumber) {
 		int result = 0;
-		int thisFirstNum = this.buffer.getFirst(); //first number for this big number - indicates sign
-		int thatFirstNum = bigNumber.buffer.getFirst(); //first number for bug number being compared - indicates sign
-		if ((thisFirstNum > 4 && thatFirstNum > 4) || (thisFirstNum == 0 && thatFirstNum == 0)) { //the big numbers are either both positive or both negative
+		System.out.println("this: " + this);
+		System.out.println("that: " + bigNumber);
+		if ((bigNumber.sign() == this.sign()) || (bigNumber.sign() == this.sign())) { //the big numbers are either both positive or both negative
 			int numberOfDigits = this.buffer.size(); //number of digits in this big number
 			int difference = numberOfDigits - bigNumber.numDigits(); //the difference in number of digits
+			System.out.println("difference: " + difference);
 			if (difference > 0) { //this big number has more digits
 				result = 1; //this big number is larger
 			}
@@ -478,7 +479,7 @@ public class BigNumber {
 			} //end if
 		}
 		else { //the big numbers do not have the same sign
-			if (thisFirstNum == 0) { //this big number is the positive number
+			if (this.sign() == 1) { //this big number is the positive number
 				result = 1; //this big number is larger
 			}
 			else { //this big number is a negative number
