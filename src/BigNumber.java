@@ -253,86 +253,7 @@ public class BigNumber {
 		return null;
 	}
 
-	/**
-	 * @author Mantas Pileckis
-	 * Inner class for Division method
-	 */
-	public class DivisionReturn {
-		BigNumber remainder;
-		BigNumber quotient;
-		/**
-		 * Constructor for Division Return
-		 * @param remainder The remainder post division
-		 * @param quotient The quotient post division
-		 * @param
-		 */
-		public DivisionReturn(BigNumber remainder, BigNumber quotient) {
-			this.remainder = remainder;
-			this.quotient = quotient;
-		}
-		/**
-		 * Method to get the remainder
-		 * @return The remainder post division
-		 */
-		public BigNumber getMod() {
-			return remainder;
-		}
-		/**
-		 * Method to get the quotient
-		 * @return the quotient post division
-		 */
-		public BigNumber getQuotient() {
-			return quotient;
-		}
-	}
 
-	/**
-	 * @author Mantas Pileckis
-	 * Divides two bigNumbers
-	 * @param bigNumber Number we are dividing our big number by
-	 * @return 
-	 */
-	public DivisionReturn divide(BigNumber bigNumber) {
-		DivisionReturn temp = null; //temp holder for new DivisionReturn Object 
-		BigNumber thisTemp = this; //temp holder for the original value
-		BigNumber subTemp = this; //temp holder for the original value post subtraction (while loop)
-		BigNumber remainder = new BigNumber(0); //base case for remainder being 0
-		BigNumber quotient = new BigNumber(1); //base case for quotient being 1
-		boolean flag = true; //flag for the loop
-		//if the input and the bigNumber are they same, return base case
-		if(this.compareTo(bigNumber) == 0) {
-			temp = new DivisionReturn(remainder, quotient);
-			flag = false;
-		}
-		//if the input is larger than the bigNumber, return original value as remainder (mod) and base case for quotient
-		else if (this.compareTo(bigNumber) == -1) {
-			temp = new DivisionReturn(thisTemp, new BigNumber(0));
-			flag = false;
-		}
-		//if the bigNumber is divisible by the input, loop until flag is triggered
-		else {
-			//counter for the loop
-			int counter = 0;
-			while(flag) {
-				//reassign subTemp to original - input until flag is triggered
-				subTemp = subTemp.subtract(bigNumber);
-				//increment the counter 
-				counter++;
-				//if subTemp is finally equal to the input, return base case of remainder and the counter for quotient
-				if(subTemp.compareTo(bigNumber) == 0) {
-					temp = new DivisionReturn(remainder, new BigNumber(counter));
-					flag = false;
-				}
-				//if subTemp is smaller than the input, return remainder as the input, and the counter for the quotient
-				else if (subTemp.compareTo(bigNumber) == -1) {
-					temp = new DivisionReturn(subTemp, new BigNumber(counter));
-					flag = false;
-				}
-			}
-		}
-		//return DivisionReturn Object -> call .getMod() and getQuotient on return to get appropriate values.
-		return temp;
-	}
 
 	public int numDigits() {
 		return this.buffer.size();
@@ -388,139 +309,109 @@ public class BigNumber {
 		}
 		buffer.addFirst(fillnum);
 	}
-
-
-
-
-
-	public DivisionReturn fullDivide(BigNumber bigNumber) {
-		DivisionReturn temp = null; //temp holder for new DivisionReturn Object 
-		BigNumber remainder = this; //base case for remainder being 0
-		BigNumber quotient = bigNumber; //base case for quotient being 1
-		//if the input and the bigNumber are they same, return base case
-		
-		if(this.compareTo(bigNumber) == 0) {
-			temp = new DivisionReturn(new BigNumber(0), new BigNumber(1));
-			
+	/**
+	 * @author Mantas Pileckis
+	 * Inner class for Division method
+	 */
+	public class DivisionReturn {
+		BigNumber remainder;
+		BigNumber quotient;
+		/**
+		 * Constructor for Division Return
+		 * @param remainder The remainder post division
+		 * @param quotient The quotient post division
+		 * @param
+		 */
+		public DivisionReturn(BigNumber remainder, BigNumber quotient) {
+			this.remainder = remainder;
+			this.quotient = quotient;
 		}
-		
-		//if the input is larger than the bigNumber, return original value as remainder (mod) and base case for quotient
-		else if (this.compareTo(bigNumber) == -1) {
-			temp = new DivisionReturn(this, new BigNumber(0));
+		/**
+		 * Method to get the remainder
+		 * @return The remainder post division
+		 */
+		public BigNumber getMod() {
+			return remainder;
 		}
-
-		else {
-			BigNumber result = new BigNumber(0);
-			int ammount = this.numDigits()-bigNumber.numDigits();
-			quotient.shiftLeft(ammount-1);
-			int counter = 0;
-			boolean finished = false;
-			//while init is bigger than divisor OR init-divisor 
-			while(remainder.compareTo(quotient) == 1  || (remainder.subtract(quotient)).compareTo(quotient) == -1) {
-				
-				System.out.println("original " +remainder);
-				System.out.println("subtract " +quotient);
-
-				//Is remainder-quotient a possitive number ?
-				if(remainder.subtract(quotient).sign() < 0) {
-					quotient.buffer.removeLast();
-					remainder = remainder.subtract(quotient);	
-				}
-				else {
-					remainder = remainder.subtract(quotient);
-					//counter++;
-				}
-				counter++;
-
-				System.out.println("post-sub " +remainder);
-				System.out.println(counter);
-				
-				//is quotient bigger than the remainder ?
-				if (remainder.compareTo(quotient) == -1) {
-					
-					System.out.println("add the carry " + counter);
-					System.out.println();
-					
-					result.buffer.add(counter);
-					//tempDivisor.buffer.removeLast();
-					//tempDivisor.shiftRight(1);
-					counter = 0;
-				}
-				//Is remainder the same as quotient ?
-				else if(remainder.compareTo(quotient) == 0) {
-					
-					//counter = 0;
-					result.buffer.add(0);
-					
-					System.out.println("add the carry xx " + counter);
-					System.out.println("DONE!!!!!!!!!!!!!!!!");
-					System.out.println();
-					
-				}
-
-
-				System.out.println(result);
-			}
-			//result.shiftLeft(1);
-			result.normalize();
-			temp = new DivisionReturn(remainder, result);
-
-
+		/**
+		 * Method to get the quotient
+		 * @return the quotient post division
+		 */
+		public BigNumber getQuotient() {
+			return quotient;
 		}
-		return temp;
 	}
-	
-	public DivisionReturn fullDivide2(BigNumber bigNumber) {
+
+	/**
+	 * @author Mantas Pileckis
+	 * Divides two bigNumbers
+	 * @param bigNumber Number we are dividing our big number by
+	 * @return 
+	 */
+	public DivisionReturn divide(BigNumber bigNumber) {
 		DivisionReturn temp = null; //temp holder for new DivisionReturn Object 
 		BigNumber remainder = this; //base case for remainder being 0
 		BigNumber quotient = bigNumber; //base case for quotient being 1
-		//if the input and the bigNumber are they same, return base case
+		boolean negative = false; //boolean flag to check if any numbers were negative
 		
-		if(this.compareTo(bigNumber) == 0) {
-			temp = new DivisionReturn(new BigNumber(0), new BigNumber(1));
-			
+		//Check for negative, if so negate it
+		if(bigNumber.sign() == -1) {
+			bigNumber.negate();
+			negative = true;
 		}
 		
+		//check for negative, if so negate it
+		if(this.sign() == -1) {
+			this.negate();
+			negative = true;
+		}
+		//If numbers are the same, return default case
+		if(this.compareTo(bigNumber) == 0) {
+			temp = new DivisionReturn(new BigNumber(0), new BigNumber(1));
+
+		}
+
 		//if the input is larger than the bigNumber, return original value as remainder (mod) and base case for quotient
 		else if (this.compareTo(bigNumber) == -1) {
 			temp = new DivisionReturn(this, new BigNumber(0));
 		}
-
+		
 		else {
 			BigNumber result = new BigNumber(0);
-			int ammount = -1;
+			int ammount = 0;
 			int counter = 0;
-			int i = 0;
-			//while init is bigger than divisor 
-			while(remainder.compareTo(bigNumber) == 1 && i<5) {
-				i++;
-				ammount = remainder.numDigits()-bigNumber.numDigits();
-				BigNumber tempQuotient = quotient;
-				tempQuotient.shiftLeft(ammount);
-				System.out.println("remainder " + remainder);
-				System.out.println("quotient " + tempQuotient);
-				
-				//System.out.println("result: " +remainder);
-				
-				while(remainder.compareTo(tempQuotient) == 1) {
-					remainder = remainder.subtract(tempQuotient);
-					System.out.println("result: " +remainder);
-					System.out.println("------------");
-					counter++;
-				}
-				//tempQuotient.buffer.removeLast();
+			BigNumber original  = new BigNumber(bigNumber.toString());
+			original.normalize();
+			BigNumber tempDivisor  = new BigNumber(bigNumber.toString());
 
-				System.out.println(counter);
+			while(remainder.compareTo(original) == 0 || remainder.compareTo(original) == 1 && ((new BigNumber(remainder.toString()).subtract(original)).sign() == 1) ) {
+				tempDivisor  = new BigNumber(bigNumber.toString());
+				ammount = (remainder.numDigits()-tempDivisor.numDigits());
+				tempDivisor.shiftLeft(ammount+1);
+
+				if(((new BigNumber(remainder.toString()).subtract(tempDivisor)).sign() == -1)) {
+
+					tempDivisor  = new BigNumber(bigNumber.toString());
+					ammount = (remainder.numDigits()-tempDivisor.numDigits());
+					tempDivisor.shiftLeft(ammount);
+
+				}
+				while(((new BigNumber(remainder.toString()).subtract(tempDivisor)).sign() == 1)) {
+					remainder = remainder.subtract(tempDivisor);
+					counter++;			
+				}
 				result.buffer.add(counter);
 				counter = 0;
-				//if(remainder.compareTo(tempQuotient) == -1) {
-				//	
-				//}
-				
-				//System.out.println(result);
+
+				if(remainder.compareTo(new BigNumber(0)) == -1) {
+					result.shiftLeft(ammount);
+				}
 			}
-			//result.shiftLeft(1);
-			//result.normalize();
+			tempDivisor  = new BigNumber(bigNumber.toString());
+			
+			if(negative) {
+				result.negate();
+			}
 			temp = new DivisionReturn(remainder, result);
 
 
@@ -528,7 +419,23 @@ public class BigNumber {
 		return temp;
 	}
 
+	/**
+	 * Efficiency black hole...
+	 * @author Mantas Pileckis
+	 */
 
+	public BigNumber factor(BigNumber bigNumber) {
+		BigNumber result = bigNumber;
+		for(long factor = 2; new BigNumber(factor * factor).compareTo(bigNumber) == -1; factor++ ) {
+			System.out.println(factor);
+			while(bigNumber.divide(new BigNumber(factor)).getMod().compareTo(new BigNumber(0)) == -1) {
+				result = result.divide(new BigNumber(factor)).getQuotient();
+				System.out.println("maybe");
+			}
+
+		}
+		return result;
+	}
 
 	private void normalize() {
 		int fillnum=buffer.getFirst()>4?9:0;
@@ -544,7 +451,15 @@ public class BigNumber {
 		}
 	}
 
-
+	public void negate() {
+		if (sign() > 0) {
+			buffer = tensCompliment(this).buffer;
+			//buffer.addFirst(9);
+		}
+		else {
+			buffer = tensCompliment(this).buffer;
+		}
+	}
 
 
 	public LinkedList getBuffer(){
