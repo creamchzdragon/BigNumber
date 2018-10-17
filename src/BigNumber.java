@@ -334,16 +334,17 @@ public class BigNumber {
 	public DivisionReturn divide(BigNumber bigNumber) {
 		DivisionReturn temp = null; //temp holder for new DivisionReturn Object 
 		BigNumber remainder = this; //base case for remainder being 0
-		BigNumber quotient = bigNumber; //base case for quotient being 1
 		boolean negative = false; //boolean flag to check if any numbers were negative
 
 		//Check for negative, if so negate it
+		//And trigger the negative flag
 		if(bigNumber.sign() == -1) {
 			bigNumber.negate();
 			negative = true;
 		}
 
 		//check for negative, if so negate it
+		//And trigger the negative flag
 		if(this.sign() == -1) {
 			this.negate();
 			negative = true;
@@ -360,41 +361,52 @@ public class BigNumber {
 		}
 
 		else {
-			BigNumber result = new BigNumber(0);
-			int ammount = 0;
-			int counter = 0;
-			BigNumber original  = new BigNumber(bigNumber.toString());
-			original.normalize();
-			BigNumber tempDivisor  = new BigNumber(bigNumber.toString());
-
+			BigNumber result = new BigNumber(0); //New bigNumber object to keep track of the result
+			int ammount = 0; //Value used to keep track of shifts through the iteration
+			int counter = 0; //Counter to populate result set
+			BigNumber original  = new BigNumber(bigNumber.toString()); // original value for number that we are dividing bigNumber by
+			BigNumber tempDivisor  = new BigNumber(bigNumber.toString()); //Value that we are going to be modifying thruough each iteration
+			
+			//While current remainder is EQUAL or MORE than the original Divisor
+			//AND current remainder - the original divisor doesn't return negative. -> loop because there are still numbers remaining to divide.
 			while(remainder.compareTo(original) == 0 || remainder.compareTo(original) == 1 && ((new BigNumber(remainder.toString()).subtract(original)).sign() == 1) ) {
-				tempDivisor  = new BigNumber(bigNumber.toString());
+				
+				//tempDivisor  = new BigNumber(bigNumber.toString());
+				//Get the difference of number digits (remainder - divisor) to determine shift.
 				ammount = (remainder.numDigits()-tempDivisor.numDigits());
-				tempDivisor.shiftLeft(ammount+1);
-
-				if(((new BigNumber(remainder.toString()).subtract(tempDivisor)).sign() == -1)) {
-
+				tempDivisor.shiftLeft(ammount);
+				
+				//if remainder - divisor == negative, that means we assumed that divisor is too big, decrement the shift by 1.
+				if( ((new BigNumber(remainder.toString()).subtract(tempDivisor)).sign() == -1)  ) {
+					
+					//Decrement the shift by 1.
 					tempDivisor  = new BigNumber(bigNumber.toString());
 					ammount = (remainder.numDigits()-tempDivisor.numDigits());
-					tempDivisor.shiftLeft(ammount);
-
+					tempDivisor.shiftLeft(ammount-1);
 				}
+				//While its a remainder - divisor is a positive number, keep subtracting and increment the counter.
+				//Use counter to populate the result after iteration is done.
 				while(((new BigNumber(remainder.toString()).subtract(tempDivisor)).sign() == 1)) {
+					
 					remainder = remainder.subtract(tempDivisor);
-					counter++;			
+					counter++;		
 				}
+				//Add the counter to the result buffer to determine the quotient step by step.
 				result.buffer.add(counter);
 				counter = 0;
-
+				
+				//If we are done, pad the result with 0's according the the number of digits that we shifted previously.
 				if(remainder.compareTo(new BigNumber(0)) == -1) {
-					result.shiftLeft(ammount);
+					result.shiftLeft(ammount-1);
 				}
 			}
+			//Reset the tempDivisor
 			tempDivisor  = new BigNumber(bigNumber.toString());
-
+			// If negative flag is triggered, invert the result.
 			if(negative) {
 				result.negate();
 			}
+			//Instantiate DivisionReturn object, to store the remainder and the quotient
 			temp = new DivisionReturn(remainder, result);
 
 
@@ -455,11 +467,12 @@ public class BigNumber {
 	 */
 	public int compareTo(BigNumber bigNumber) {
 		int result = 0;
-		int thisFirstNum = this.buffer.getFirst(); //first number for this big number - indicates sign
-		int thatFirstNum = bigNumber.buffer.getFirst(); //first number for bug number being compared - indicates sign
-		if ((thisFirstNum > 4 && thatFirstNum > 4) || (thisFirstNum == 0 && thatFirstNum == 0)) { //the big numbers are either both positive or both negative
+		//System.out.println("this: " + this);
+		//System.out.println("that: " + bigNumber);
+		if ((bigNumber.sign() == this.sign()) || (bigNumber.sign() == this.sign())) { //the big numbers are either both positive or both negative
 			int numberOfDigits = this.buffer.size(); //number of digits in this big number
 			int difference = numberOfDigits - bigNumber.numDigits(); //the difference in number of digits
+			//System.out.println("difference: " + difference);
 			if (difference > 0) { //this big number has more digits
 				result = 1; //this big number is larger
 			}
@@ -484,7 +497,7 @@ public class BigNumber {
 			} //end if
 		}
 		else { //the big numbers do not have the same sign
-			if (thisFirstNum == 0) { //this big number is the positive number
+			if (this.sign() == 1) { //this big number is the positive number
 				result = 1; //this big number is larger
 			}
 			else { //this big number is a negative number
@@ -531,33 +544,43 @@ public class BigNumber {
 	public LinkedList getBuffer(){
 		return buffer;
 	}
-	public BigNumber[] altDivideRemainder(BigNumber bn) {
-		BigNumber thisNum=new BigNumber(this);
-		BigNumber otherNum=new BigNumber(bn);
-		BigNumber qoutient=new BigNumber();
+	private BigNumber[] altDivideRemainder(BigNumber bn) {
+		BigNumber thisNum=new BigNumber(this);//copy this number
+		BigNumber otherNum=new BigNumber(bn);//copy the number coming in
+		BigNumber qoutient=new BigNumber();//create a resulting qoutient 
 		
-		if(otherNum.sign()==-1) {
+		if(otherNum.sign()==-1) {//flip the other number if it is negative
 			otherNum=tensCompliment(otherNum);
 		}
-		if(thisNum.sign()==-1) {
+		if(thisNum.sign()==-1) {//flip this number if it is negative
 			thisNum=tensCompliment(thisNum);
 		}
-		int shift=thisNum.numDigits()-1;
-		while(shift>=0) {
-			BigNumber tempDiv=new BigNumber(otherNum);
+		int shift=thisNum.numDigits()-1;//create a shift factor to track how far somethign should shift
+		while(shift>=0) {//keep shifting until wee are left with the initial number
+			BigNumber tempDiv=new BigNumber(otherNum);//create a temp variable based on the other number and shift it by the shift amount
 			tempDiv.shiftLeft(shift);
-			int count=0;
-			while(thisNum.compareTo(otherNum)>0) {
-				thisNum=thisNum.subtract(otherNum);
+			int count=0;//keep a count for how many time you subtract from the initial number
+			while(thisNum.compareTo(tempDiv)>0) {//keep subtracting until our tempDiv is greater than our current number
+				thisNum=thisNum.subtract(tempDiv);
 				count++;
 			}
-			qoutient.buffer.addLast(count);
+			qoutient.buffer.addLast(count);//push the count into the qoutient buffer
 			shift--;
 		}
-		BigNumber[] nums=new BigNumber[2];
+		BigNumber[] nums=new BigNumber[2];//create array to return both the qoutient and remainder
+		if(this.sign()*bn.sign()==-1) {//get the final sign
+			qoutient=tensCompliment(qoutient);
+		}
+		qoutient.normalize();
 		nums[0]=qoutient;
 		nums[1]=thisNum;
 		return nums;
+	}
+	public BigNumber mod(BigNumber bn) {
+		return altDivideRemainder(bn)[1];
+	}
+	public BigNumber altDivide(BigNumber bn) {
+		return altDivideRemainder(bn)[0];
 	}
 
 }
