@@ -18,7 +18,9 @@ public class BigNumber {
 	//the buffer is god
 	private LinkedList<Integer> buffer;
 	//default private constructor
-	private BigNumber() {}
+	private BigNumber() {
+		this(0);
+	}
 	/**@author Jamie Walder
 	 * create a new big number based on a long
 	 * @param num number this big number will be based off of
@@ -85,6 +87,10 @@ public class BigNumber {
 			buffer.addFirst(0);
 		}
 		normalize();
+	}
+	public BigNumber(BigNumber bn) {
+		this.buffer=(LinkedList<Integer>)bn.buffer.clone();
+		
 	}
 	/**@author Jamie Walder
 	 * converts the given number to it's tens compliment
@@ -524,6 +530,34 @@ public class BigNumber {
 	}
 	public LinkedList getBuffer(){
 		return buffer;
+	}
+	public BigNumber[] altDivideRemainder(BigNumber bn) {
+		BigNumber thisNum=new BigNumber(this);
+		BigNumber otherNum=new BigNumber(bn);
+		BigNumber qoutient=new BigNumber();
+		
+		if(otherNum.sign()==-1) {
+			otherNum=tensCompliment(otherNum);
+		}
+		if(thisNum.sign()==-1) {
+			thisNum=tensCompliment(thisNum);
+		}
+		int shift=thisNum.numDigits()-1;
+		while(shift>=0) {
+			BigNumber tempDiv=new BigNumber(otherNum);
+			tempDiv.shiftLeft(shift);
+			int count=0;
+			while(thisNum.compareTo(otherNum)>0) {
+				thisNum=thisNum.subtract(otherNum);
+				count++;
+			}
+			qoutient.buffer.addLast(count);
+			shift--;
+		}
+		BigNumber[] nums=new BigNumber[2];
+		nums[0]=qoutient;
+		nums[1]=thisNum;
+		return nums;
 	}
 
 }

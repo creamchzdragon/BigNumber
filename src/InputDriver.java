@@ -19,9 +19,10 @@ public class InputDriver {
 		
 		//c.negate();
 		//System.out.println(c);
-		
+	
 		BigNumber ab=new BigNumber("1500");
 		BigNumber ac= new BigNumber("11");
+		System.out.println(ab.altDivideRemainder(ac)[0]);
 		BigNumber.DivisionReturn result;
 
 

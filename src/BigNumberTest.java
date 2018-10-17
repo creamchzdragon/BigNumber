@@ -42,7 +42,7 @@ class BigNumberTest {
 		//test subtract
 				for(int i=-500;i<=500;i++) {
 					for(int j=-500;i<=500;i++) {
-						assert(i/j==Long.parseLong(new BigNumber(i).divid(new BigNumber(j)).toString()));
+						assert(i/j==Long.parseLong(new BigNumber(i).divide(new BigNumber(j)).getQuotient().toString()));
 					}
 				}
 	}
@@ -51,7 +51,7 @@ class BigNumberTest {
 		//test subtract
 				for(int i=-500;i<500;i++) {
 					for(int j=-500;i<500;i++) {
-						assert(i%j==Long.parseLong(new BigNumber(i).mod(new BigNumber(j)).toString()));
+						assert(i%j==Long.parseLong(new BigNumber(i).divide(new BigNumber(j)).getMod().toString()));
 					}
 				}
 	}
