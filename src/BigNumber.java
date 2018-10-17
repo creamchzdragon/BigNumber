@@ -560,7 +560,7 @@ public class BigNumber {
 			BigNumber tempDiv=new BigNumber(otherNum);//create a temp variable based on the other number and shift it by the shift amount
 			tempDiv.shiftLeft(shift);
 			int count=0;//keep a count for how many time you subtract from the initial number
-			while(thisNum.compareTo(tempDiv)>0) {//keep subtracting until our tempDiv is greater than our current number
+			while(thisNum.compareTo(tempDiv)>=0) {//keep subtracting until our tempDiv is greater than our current number
 				thisNum=thisNum.subtract(tempDiv);
 				count++;
 			}
