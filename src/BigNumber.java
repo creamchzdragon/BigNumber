@@ -123,6 +123,7 @@ public class BigNumber {
 			return new BigNumber().setBuffer(result2);
 			//return new BigNumber(0).add(new BigNumber().setBuffer(result));
 		}
+		
 		return new BigNumber().setBuffer(result);
 
 	}
@@ -435,7 +436,7 @@ public class BigNumber {
 	private void normalize() {
 		int fillnum=buffer.getFirst()>4?9:0;
 		Iterator<Integer> it=buffer.iterator();
-		while(it.hasNext()&&it.next()==fillnum) {
+		while(buffer.size()>1&&it.hasNext()&&it.next()==fillnum) {
 			it.remove();
 		}
 		if (fillnum == 0 && buffer.get(0) > 4) {
@@ -550,10 +551,14 @@ public class BigNumber {
 		BigNumber qoutient=new BigNumber();//create a resulting qoutient 
 		
 		if(otherNum.sign()==-1) {//flip the other number if it is negative
+			otherNum.buffer.addFirst(9);
 			otherNum=tensCompliment(otherNum);
+			otherNum.normalize();
 		}
 		if(thisNum.sign()==-1) {//flip this number if it is negative
+			thisNum.buffer.addFirst(9);
 			thisNum=tensCompliment(thisNum);
+			thisNum.normalize();
 		}
 		int shift=thisNum.numDigits()-1;//create a shift factor to track how far somethign should shift
 		while(shift>=0) {//keep shifting until wee are left with the initial number
