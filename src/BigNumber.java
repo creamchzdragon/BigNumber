@@ -422,19 +422,53 @@ public class BigNumber {
 	 * Efficiency black hole...
 	 * @author Mantas Pileckis
 	 */
-
-	public Set<BigNumber> factors() {
-		BigNumber result = new BigNumber(this);
+	public BigNumber squareRoot() {
+		BigNumber thisNum = new BigNumber(this);
 		//find square root
-		BigNumber root=new BigNumber(result);
-		BigNumber prev=new BigNumber(result);
-		root.shiftRight(result.numDigits()/2);
+		BigNumber root=new BigNumber(thisNum);
+		BigNumber prev=new BigNumber(thisNum);
+		
+		if(this.numDigits()>1)root.shiftRight(thisNum.numDigits()/2);
+		root.normalize();
+		final BigNumber two=new BigNumber("2");
+		final BigNumber zero=new BigNumber("0");
+		final BigNumber one=new BigNumber("1");
 		while(!root.equals(prev)) {
 			prev=new BigNumber(root);
-			root=root.add(result.altDivide(root)).altDivide(new BigNumber("2"));
+			if(!root.equals(zero))
+			root=root.add(thisNum.altDivide(root)).altDivide(two);
+		
 		}
+		return root;
+	}
+	public Set<BigNumber> factors() {
+		final BigNumber two=new BigNumber("2");
+		final BigNumber zero=new BigNumber("0");
+		final BigNumber one=new BigNumber("1");
+		BigNumber thisNum = new BigNumber(this);
+		BigNumber root=squareRoot();
+		
+		HashSet result=new HashSet<BigNumber>();
+		
+		while(!root.equals(zero)) {
+			BigNumber[] qr=thisNum.altDivideRemainder(root);
+			if(qr[1].equals(zero)&&!root.equals(one)) {
+				result.add(root);
+				result.add(qr[0]);
+				root=root.squareRoot();
+				
+				
+				
+			}
+			else {
+				root=root.subtract(one);
+			
+			}
+			System.out.println(root);
+		}
+		
 		//TODO finish it 
-		return new HashSet<BigNumber>();
+		return result;
 		
 		
 	}
@@ -570,6 +604,7 @@ public class BigNumber {
 		while(shift>=0) {//keep shifting until wee are left with the initial number
 			BigNumber tempDiv=new BigNumber(otherNum);//create a temp variable based on the other number and shift it by the shift amount
 			tempDiv.shiftLeft(shift);
+			tempDiv.normalize();
 			int count=0;//keep a count for how many time you subtract from the initial number
 			while(thisNum.compareTo(tempDiv)>=0) {//keep subtracting until our tempDiv is greater than our current number
 				thisNum=thisNum.subtract(tempDiv);
