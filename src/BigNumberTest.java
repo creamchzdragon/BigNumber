@@ -12,9 +12,9 @@ class BigNumberTest {
 	@Test
 	void testAdd() {
 		//test add
-				for(int i=-500;i<=500;i++) {
-					for(int j=-500;j<=500;j++) {
-						System.out.println(i+" "+j);
+				for(long i=-500;i<=500;i++) {
+					for(long j=-500;j<=500;j++) {
+						
 						assert(i+j==Long.parseLong(new BigNumber(i).add(new BigNumber(j)).toString()));
 					}
 				}
@@ -22,8 +22,8 @@ class BigNumberTest {
 	@Test
 	void testSub() {
 		//test subtract
-				for(int i=-500;i<500;i++) {
-					for(int j=-500;i<500;i++) {
+				for(long i=-500;i<500;i++) {
+					for(long j=-500;j<500;j++) {
 						assert(i-j==Long.parseLong(new BigNumber(i).subtract(new BigNumber(j)).toString()));
 					}
 				}
@@ -31,8 +31,8 @@ class BigNumberTest {
 	@Test
 	void testMult() {
 		//test subtract
-				for(int i=-500;i<500;i++) {
-					for(int j=-500;i<500;i++) {
+				for(long i=-500;i<500;i++) {
+					for(long j=-500;j<500;j++) {
 						assert(i*j==Long.parseLong(new BigNumber(i).multipy(new BigNumber(j)).toString()));
 					}
 				}
@@ -40,18 +40,26 @@ class BigNumberTest {
 	@Test
 	void testDiv() {
 		//test subtract
-				for(int i=-500;i<=500;i++) {
-					for(int j=-500;i<=500;i++) {
-						assert(i/j==Long.parseLong(new BigNumber(i).divide(new BigNumber(j)).getQuotient().toString()));
+				for(long i=-500;i<=500;i++) {
+					for(long j=-500;j<=500;j++) {
+						if(j==0) {
+							continue;
+						}
+						System.out.println("div i:"+i+" j:"+j);
+						assert(i/j==Long.parseLong(new BigNumber(i).altDivide(new BigNumber(j)).toString()));
 					}
 				}
 	}
 	@Test
 	void testMod() {
 		//test subtract
-				for(int i=-500;i<500;i++) {
-					for(int j=-500;i<500;i++) {
-						assert(i%j==Long.parseLong(new BigNumber(i).divide(new BigNumber(j)).getMod().toString()));
+				for(long i=-500;i<500;i++) {
+					for(long j=-500;j<500;j++) {
+						if(j==0) {
+							continue;
+						}
+						System.out.println("mod i:"+i+" j:"+j);
+						assert(((Long)i%j)==Long.parseLong(new BigNumber(i).mod(new BigNumber(j)).toString()));
 					}
 				}
 	}

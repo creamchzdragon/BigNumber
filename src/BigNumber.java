@@ -576,6 +576,9 @@ public class BigNumber {
 		if(this.sign()*bn.sign()==-1) {//get the final sign
 			qoutient=tensCompliment(qoutient);
 		}
+		if(this.sign()==-1) {
+			thisNum=tensCompliment(thisNum);
+		}
 		qoutient.normalize();
 		nums[0]=qoutient;
 		nums[1]=thisNum;
