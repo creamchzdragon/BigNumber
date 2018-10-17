@@ -28,12 +28,7 @@ public class BigNumber {
 	 * @param num number this big number will be based off of
 	 */
 	public BigNumber(long num) {
-		try {
-			throw new Exception("Depreciated");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		buffer=new LinkedList<Integer>();
 		boolean neg=num<0;
 		if(neg) {
