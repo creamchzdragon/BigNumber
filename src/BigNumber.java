@@ -1,5 +1,7 @@
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 
 /***
  * A class that can contain crazy big numbers
@@ -26,6 +28,12 @@ public class BigNumber {
 	 * @param num number this big number will be based off of
 	 */
 	public BigNumber(long num) {
+		try {
+			throw new Exception("Depreciated");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		buffer=new LinkedList<Integer>();
 		boolean neg=num<0;
 		if(neg) {
@@ -420,17 +428,20 @@ public class BigNumber {
 	 * @author Mantas Pileckis
 	 */
 
-	public BigNumber factor(BigNumber bigNumber) {
-		BigNumber result = bigNumber;
-		for(long factor = 2; new BigNumber(factor * factor).compareTo(bigNumber) == -1; factor++ ) {
-			System.out.println(factor);
-			while(bigNumber.divide(new BigNumber(factor)).getMod().compareTo(new BigNumber(0)) == -1) {
-				result = result.divide(new BigNumber(factor)).getQuotient();
-				System.out.println("maybe");
-			}
-
+	public Set<BigNumber> factors() {
+		BigNumber result = new BigNumber(this);
+		//find square root
+		BigNumber root=new BigNumber(result);
+		BigNumber prev=new BigNumber(result);
+		root.shiftRight(result.numDigits()/2);
+		while(!root.equals(prev)) {
+			prev=new BigNumber(root);
+			root=root.add(result.altDivide(root)).altDivide(new BigNumber("2"));
 		}
-		return result;
+		//TODO finish it 
+		return new HashSet<BigNumber>();
+		
+		
 	}
 
 	private void normalize() {
