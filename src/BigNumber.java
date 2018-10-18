@@ -427,8 +427,14 @@ public class BigNumber {
 		//find square root
 		BigNumber root=new BigNumber(thisNum);
 		BigNumber prev=new BigNumber(thisNum);
-		
-		if(this.numDigits()>1)root.shiftRight(thisNum.numDigits()/2);
+		if(this.numDigits()>1) {
+			root.shiftRight(thisNum.numDigits()/2);
+		}
+		else {
+			//this needs to be updated
+			int newRoot = (int)Math.sqrt(Integer.parseInt(root.toString()));
+			root = new BigNumber("" + newRoot);
+		}
 		root.normalize();
 		final BigNumber two=new BigNumber("2");
 		final BigNumber zero=new BigNumber("0");
@@ -458,13 +464,13 @@ public class BigNumber {
 				root=root.squareRoot();
 				
 				
-				
 			}
 			else {
 				root=root.subtract(one);
 			
 			}
 			System.out.println(root);
+
 		}
 		
 		//TODO finish it 
