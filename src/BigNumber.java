@@ -3,13 +3,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-/***
- * A class that can contain crazy big numbers
- * @author Jamie Walder, Mantas (insert last name), Justin Davis
- *Jamie Walder
- *	• BigNumber( ) constructors
-	• BigNumber add (BigNumber)
-	• BigNumber subtract(BigNumber)
+/**
+ * A class that can contain crazy big numbers and perform basic arithmetic operations.
+ * 
+ * @authors Jamie Walder, Mantas Pileckis, Justin Davis
+ * 
  */
 public class BigNumber {
 	//buffer that contains the digits of our BigNumber, 
@@ -19,78 +17,112 @@ public class BigNumber {
 	//the buffer uses tens comliment for negative numbers
 	//the buffer is god
 	private LinkedList<Integer> buffer;
-	//default private constructor
+	
+	/**
+	 * Default constructor. Initially sets the number to 0.
+	 */
 	private BigNumber() {
 		this(0);
-	}
-	/**@author Jamie Walder
-	 * create a new big number based on a long
-	 * @param num number this big number will be based off of
+	} //end default constructor
+	
+	/** 
+	 * Creates a new big number based on a long.
+	 * 
+	 * @author Jamie Walder 
+	 * @param num number this big number will be based off of.
 	 */
 	public BigNumber(long num) {
-		
+		// create new linked list to store integers of the big number
 		buffer=new LinkedList<Integer>();
+		// boolean to keep track of sign of the number
 		boolean neg=num<0;
+		// if a negative number, make it positive
 		if(neg) {
 			num*=-1;
 		}
+		// keep adding the (mod 10) of num to the front of the buffer
+		// until num is less than 10
 		while(num>=10) {
 			buffer.addFirst((int)num%10);
 			num/=10;
 		}
+		// add whatever value is left in num to front of buffer
 		buffer.addFirst((int)num);
+		// if number is negative, converts number to its tens complement form
+		// then adds a 9 to the front to denote it is negative
 		if(neg) {
 			buffer=BigNumber.tensCompliment(this).buffer;
 			buffer.addFirst(9);
 		}
+		//if positive, adds a 0 to the front
 		else {
 			buffer.addFirst(0);
 		}
-	}
-	/***@author Jamie Walder
-	 * creates a buffer with a number of digits, fills buffer with null
-	 * @param numberOfDigits the number of digits the number will have
+	} // end long constructor
+	
+	/**
+	 * NOTES: FILLNUM SHOULD BE > 0 AND < 10!!!!
+	 * 		  NUMBEROFDIGITS SHOULD BE >= 0!!!!
+	 * 
+	 * Creates a buffer with a number of digits.
+	 * 
+	 * @author Jamie Walder
+	 * @param numberOfDigits the number of digits the number will have.
 	 */
 	public BigNumber(int numberOfDigits, int fillNum) {
-		//adds 1 so that we can account for positive or negative
+		// assign a new LinkedList to the buffer
 		buffer=new LinkedList<Integer>();
+		// fill the entire length of the LinkedList with int specified in fillNum
 		for(int i=0;i<numberOfDigits;i++) {
 			buffer.add(fillNum);
 		}
-
-	}
-	/**@author Jamie Walder
-	 * creates a big number based off of a string of that number and then fills the buffer accordingly 
-	 * @param number the string of the number that will be inputed
+	} // end number of digits construtor
+	
+	/**
+	 * Creates a big number based off a string input and then fills the buffer accordingly.
+	 * 
+	 * @author Jamie Walder
+	 * @param number the string of the number that will be inputed.
 	 * @throws IllegalInputException 
 	 */
 	public BigNumber(String number) {
+		// determines whether the big number inputed is negative
 		boolean neg=number.charAt(0)=='-';
+		// assigns a new LinkedList to buffer
 		buffer=new LinkedList<Integer>();
-		//create a number with ONE more decimal to account for negatives 
+		// convert String input to an array of type char
 		char[] digits=number.toCharArray();
+		// create a number with ONE more decimal to account for negatives
 		for(int i=(neg?1:0);i<digits.length;i++) {
-			if(digits[i]<='9'&&digits[i]>='0')
+			// if current char is a number between 0 and 9 inclusive, add to buffer
+			if(digits[i]<='9'&&digits[i]>='0') {
 				buffer.add(digits[i]-'0');
+			}
+			// otherwise, current char is not a number between 0 and 9 inclusive
+			// throw an exception
 			else {
+				// throw an exception and print the stack trace
 				try {
 					throw new IllegalInputException(""+digits[i]);
 				} catch (IllegalInputException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
-
+		// if the big number is negative, use the tens complement and add
+		// a 9 to the front of the buffer
 		if(neg) {
 			buffer=tensCompliment(this).buffer;
 			buffer.addFirst(9);
 		}
+		// big number is positive; add a 0 to front of the buffer
 		else {
 			buffer.addFirst(0);
 		}
+		// normalizes the new big number
 		normalize();
-	}
+	} //end String constructor
+	
 	public BigNumber(BigNumber bn) {
 		this.buffer=(LinkedList<Integer>)bn.buffer.clone();
 		

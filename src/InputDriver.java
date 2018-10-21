@@ -20,6 +20,9 @@ public class InputDriver {
 			
 		}
 	
+		BigNumber a = new BigNumber("44");
+		System.out.println(a.factors());
+		
 	}
 
 }
