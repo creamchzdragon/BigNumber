@@ -14,7 +14,7 @@ public class BigNumber {
 	//The buffer is read from left to right with the first digit(10^0) being the end of the array
 	//could be an linked list
 	//the buffer is base 10
-	//the buffer uses tens comliment for negative numbers
+	//the buffer uses tens complement for negative numbers
 	//the buffer is god
 	private LinkedList<Integer> buffer;
 
@@ -61,22 +61,28 @@ public class BigNumber {
 	} // end long constructor
 
 	/**
-	 * NOTES: FILLNUM SHOULD BE > 0 AND < 10!!!!
-	 * 		  NUMBEROFDIGITS SHOULD BE >= 0!!!!
-	 * 
-	 * Creates a buffer with a number of digits.
+	 * Creates a buffer with a specified number of digits.
 	 * 
 	 * @author Jamie Walder
 	 * @param numberOfDigits the number of digits the number will have.
+	 * @throws IllegalInputException numberOfDigits is less than 0, fillNum < 0, or fillNum > 10.
 	 */
 	public BigNumber(int numberOfDigits, int fillNum) {
+		// one of the parameters has invalid input
+		if (numberOfDigits < 0 || fillNum < 0 || fillNum > 10) {
+			try {
+				throw new IllegalInputException("One input is invalid.");
+			} catch (IllegalInputException e) {
+				e.printStackTrace();
+			}
+		}
 		// assign a new LinkedList to the buffer
 		buffer=new LinkedList<Integer>();
 		// fill the entire length of the LinkedList with int specified in fillNum
 		for(int i=0;i<numberOfDigits;i++) {
 			buffer.add(fillNum);
 		}
-	} // end number of digits construtor
+	} // end number of digits constructor
 
 	/**
 	 * Creates a big number based off a string input and then fills the buffer accordingly.
@@ -145,29 +151,38 @@ public class BigNumber {
 		Iterator<Integer> it=bn.buffer.descendingIterator();
 		// new LinkedList to store the result of the tens complement
 		LinkedList<Integer> result = new LinkedList<>();
+		// add 10s complement of last element
 		result.add(10-it.next());
-		// 
+		// loop while there are more numbers to convert
+		// add the 9s complement of remaining numbers
 		while(it.hasNext()) {
 			result.addFirst(9-it.next());
 		}
-		
+		// the last element of the big number was a 0 - must now carry value of the 10 over to all numbers
 		if(result.getLast()==10) {
 			Iterator<Integer> it2=result.descendingIterator();
 			LinkedList<Integer> result2=new LinkedList<Integer>();
 			result2.add(0);
 			it2.next();
 			int carry=1;
+			// loop while there are more numbers left
 			while(it2.hasNext()) {
+				// add value of carry to current value of buffer
 				int num=it2.next()+carry;
+				// if there is a carry, decrement
 				if(carry>0)carry--;
+				// if current element is greater than 9, increment carry and find value of number mod 10
 				if(num>9) {
 					carry++;
 					num%=10;
 				}
+				// add current value of num into result LinkedList
 				result2.addFirst(num);
 			}
+			// return a big number with the new buffer after the carry
 			return new BigNumber().setBuffer(result2);
 		}
+		// return a big number with the new buffer after no carry
 		return new BigNumber().setBuffer(result);
 	} // end tensCompliment
 	
@@ -370,7 +385,7 @@ public class BigNumber {
 		for (int i = 0; i < size; i++) {
 			tempResult = new BigNumber(0);
 			// gets the ith element of the big number we are multiplying by (the ith element of the buffer)
-			int value = (int) thatTemp.getBuffer().get(i);
+			int value = (int) thatTemp.buffer.get(i);
 			// the value of the current element is not 0
 			if (value != 0) {
 				// adds the value of this big number over and over again based on the value of the value variable
@@ -552,56 +567,72 @@ public class BigNumber {
 		return root;
 	} //end squareRoot
 	
+	/**
+	 * Determines factors for a big number and then returns them as a set.
+	 * 
+	 * @author Mantas Pileckis
+	 * @return a set of factors for this big number.
+	 */
 	public Set<BigNumber> factors() {
+		// creating constants
 		final BigNumber two=new BigNumber("2");
 		final BigNumber zero=new BigNumber("0");
 		final BigNumber one=new BigNumber("1");
 		BigNumber thisNum = new BigNumber(this);
 		BigNumber root=squareRoot();
-
+		
+		// create a hashset to store factors - prevents duplicates from being returned
 		HashSet result=new HashSet<BigNumber>();
 
+		// loops while the value of root does not equal 0
 		while(!root.equals(zero)) {
+			// and array of big numbers that store result of a division and a reaminder
 			BigNumber[] qr=thisNum.altDivideRemainder(root);
+			// the
 			if(qr[1].equals(zero)&&!root.equals(one)) {
 				result.add(root);
 				result.add(qr[0]);
 				root=root.squareRoot();
-
-
 			}
 			else {
 				root=root.subtract(one);
-
 			}
 			System.out.println(root);
-
 		}
-
-		//TODO finish it 
+		// returns a hashset of factors
 		return result;
+	} //end factors
 
-
-	}
-
+	/**
+	 * Normalizes the big number. Reduces excess 0s and 9s.
+	 * 
+	 * @author Justin Davis 
+	 */
 	private void normalize() {
 		int fillnum=buffer.getFirst()>4?9:0;
 		Iterator<Integer> it=buffer.iterator();
+		// loop while we have excess 9s or 0s
 		while(buffer.size()>1&&it.hasNext()&&it.next()==fillnum) {
 			it.remove();
 		}
+		// we have a positive number, but the first digit is greater than 4
+		// add a 0 to keep it positive (in tens complement)
 		if (fillnum == 0 && buffer.get(0) > 4) {
 			buffer.addFirst(fillnum);
 		}
+		// we have a negative number, but the first digit is less than 5
+		// add a 9 to keep it negative (in tens complement)
 		if (fillnum == 9 && buffer.get(0) < 5) {
 			buffer.addFirst(fillnum);
 		}
-	}
+	} // end normalize
+	
 	/**
+	 * Compares two big numbers to see if they are equal. Returns a boolean to represent the comparison.
+	 * 
 	 * @author Justin Davis
-	 * Compares two big numbers to see if they are equal
-	 * @param bigNumber the big number being compared to this number
-	 * @return a boolean whether or not two big numbers are equal - true if equal, false if not
+	 * @param bigNumber the big number being compared to this number.
+	 * @return a boolean whether or not two big numbers are equal. True if equal, false if not.
 	 */
 	public boolean equals(BigNumber bigNumber) {
 		boolean equal = true;
@@ -609,18 +640,19 @@ public class BigNumber {
 			equal = false; //not equal - set to false
 		}
 		return equal;
-	}
+	} //end equals
+	
 	/**
+	 * Compares two big numbers together and returns an integer result based on that comparison.
+	 * 
 	 * @author Justin Davis
-	 * Compares two big numbers together
-	 * @param bigNumber the big number to be compared to this number
+	 * @param bigNumber the big number to be compared to this number.
 	 * @return -1 if this big number is less than the number being compared, 0 if both numbers are equal, or 1 
-	 * if this number is larger than the number being compared
+	 * if this number is larger than the number being compared.
 	 */
 	public int compareTo(BigNumber bigNumber) {
 		int result = 0;
-		//System.out.println("this: " + this);
-		//System.out.println("that: " + bigNumber);
+
 		if ((bigNumber.sign() == this.sign()) || (bigNumber.sign() == this.sign())) { //the big numbers are either both positive or both negative
 			int numberOfDigits = this.buffer.size(); //number of digits in this big number
 			int difference = numberOfDigits - bigNumber.numDigits(); //the difference in number of digits
@@ -657,75 +689,86 @@ public class BigNumber {
 			} //end if
 		} //end if
 		return result;
-	}
+	} //end compareTo
+	
 	/**
+	 * Negates the big number. If positive becomes negative, or if negative becomes positive.
+	 * 
 	 * @author Justin Davis
-	 * Negates our big number - if positive becomes negative; if negative becomes positive
 	 */
 	public void negate() {
+		// this big number is positive
 		if (sign() > 0) {
 			buffer = tensCompliment(this).buffer;
-			//buffer.addFirst(9);
 		}
+		// big number is negative
 		else {
 			buffer = tensCompliment(this).buffer;
 		}
-	}
+	} //end negate
+	
 	/**
+	 * Returns an integer to represent the sign of a big number.
+	 * 
 	 * @author Justin Davis
-	 * @return an int representing the sign of the big number; +1 if positive, -1 if negative
+	 * @return an int representing the sign of the big number; +1 if positive or 0, -1 if negative.
 	 */
 	public int sign() {
 		int sign = 1;
+		// if first element of buffer is greater than 4, big number is negative
 		if (buffer.get(0) > 4) {
 			sign = -1;
 		}
 		return sign;
-	}
+	} // end sign
+	
 	/**
+	 * Returns the number of digits in the big number.
+	 * 
 	 * @author Justin Davis
-	 * Returns the number of digits in the big number
-	 * @return the number of digits in our big number
+	 * @return the number of digits in our big number.
 	 */
 	public int numDigits() {
 		return this.buffer.size();
-	}
-	public String toString2() {
-		return buffer.toString();
-	}
-	public LinkedList getBuffer(){
-		return buffer;
-	}
+	} // end numDigits
+	
+	/**
+	 * Calculates a division between two big numbers. Returns an array which stores the result of a division and the remainder.
+	 * 
+	 * @author Mantas Pileckis
+	 * @param bn the big number we are dividing the current big number by.
+	 * @return an array that stores the result of the division and the remainder.
+	 */
 	private BigNumber[] altDivideRemainder(BigNumber bn) {
-		BigNumber thisNum=new BigNumber(this);//copy this number
-		BigNumber otherNum=new BigNumber(bn);//copy the number coming in
-		BigNumber qoutient=new BigNumber();//create a resulting qoutient 
+		BigNumber thisNum=new BigNumber(this); //copy this number
+		BigNumber otherNum=new BigNumber(bn); //copy the number coming in
+		BigNumber qoutient=new BigNumber(); //create a resulting quotient 
 
-		if(otherNum.sign()==-1) {//flip the other number if it is negative
+		if(otherNum.sign()==-1) { //flip the other number if it is negative
 			otherNum.buffer.addFirst(9);
 			otherNum=tensCompliment(otherNum);
 			otherNum.normalize();
 		}
-		if(thisNum.sign()==-1) {//flip this number if it is negative
+		if(thisNum.sign()==-1) { //flip this number if it is negative
 			thisNum.buffer.addFirst(9);
 			thisNum=tensCompliment(thisNum);
 			thisNum.normalize();
 		}
-		int shift=thisNum.numDigits()-1;//create a shift factor to track how far somethign should shift
-		while(shift>=0) {//keep shifting until wee are left with the initial number
-			BigNumber tempDiv=new BigNumber(otherNum);//create a temp variable based on the other number and shift it by the shift amount
+		int shift=thisNum.numDigits()-1; //create a shift factor to track how far something should shift
+		while(shift>=0) { //keep shifting until wee are left with the initial number
+			BigNumber tempDiv=new BigNumber(otherNum); //create a temp variable based on the other number and shift it by the shift amount
 			tempDiv.shiftLeft(shift);
 			tempDiv.normalize();
-			int count=0;//keep a count for how many time you subtract from the initial number
-			while(thisNum.compareTo(tempDiv)>=0) {//keep subtracting until our tempDiv is greater than our current number
+			int count=0; //keep a count for how many time you subtract from the initial number
+			while(thisNum.compareTo(tempDiv)>=0) { //keep subtracting until our tempDiv is greater than our current number
 				thisNum=thisNum.subtract(tempDiv);
 				count++;
 			}
-			qoutient.buffer.addLast(count);//push the count into the qoutient buffer
+			qoutient.buffer.addLast(count); //push the count into the quotient buffer
 			shift--;
 		}
-		BigNumber[] nums=new BigNumber[2];//create array to return both the qoutient and remainder
-		if(this.sign()*bn.sign()==-1) {//get the final sign
+		BigNumber[] nums=new BigNumber[2];//create array to return both the quotient and remainder
+		if(this.sign()*bn.sign()==-1) { //get the final sign - if negative, make quotient negative
 			qoutient=tensCompliment(qoutient);
 		}
 		if(this.sign()==-1) {
@@ -735,12 +778,28 @@ public class BigNumber {
 		nums[0]=qoutient;
 		nums[1]=thisNum;
 		return nums;
-	}
+	} // end altDivideRemainder
+	
+	/**
+	 * Returns the remainder of a division between two big numbers.
+	 * 
+	 * @author Mantas Pileckis
+	 * @param bn big number that will divide the current big number.
+	 * @return the remainder of a division between two big numbers.
+	 */
 	public BigNumber mod(BigNumber bn) {
 		return altDivideRemainder(bn)[1];
-	}
+	} // end mod
+	
+	/**
+	 * Returns the number of times a big number goes into the current big number.
+	 * 
+	 * @author Mantas Pileckis
+	 * @param bn big number that will divide the current big number.
+	 * @return the result of a big number division. The number of times a big number goes into the current big number.
+	 */
 	public BigNumber altDivide(BigNumber bn) {
 		return altDivideRemainder(bn)[0];
-	}
+	} // end altDivide
 
-}
+} // end BigNumber
