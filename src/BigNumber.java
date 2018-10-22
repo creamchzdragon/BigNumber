@@ -17,14 +17,14 @@ public class BigNumber {
 	//the buffer uses tens comliment for negative numbers
 	//the buffer is god
 	private LinkedList<Integer> buffer;
-	
+
 	/**
 	 * Default constructor. Initially sets the number to 0.
 	 */
 	private BigNumber() {
 		this(0);
 	} //end default constructor
-	
+
 	/** 
 	 * Creates a new big number based on a long.
 	 * 
@@ -59,7 +59,7 @@ public class BigNumber {
 			buffer.addFirst(0);
 		}
 	} // end long constructor
-	
+
 	/**
 	 * NOTES: FILLNUM SHOULD BE > 0 AND < 10!!!!
 	 * 		  NUMBEROFDIGITS SHOULD BE >= 0!!!!
@@ -77,13 +77,13 @@ public class BigNumber {
 			buffer.add(fillNum);
 		}
 	} // end number of digits construtor
-	
+
 	/**
 	 * Creates a big number based off a string input and then fills the buffer accordingly.
 	 * 
 	 * @author Jamie Walder
 	 * @param number the string of the number that will be inputed.
-	 * @throws IllegalInputException 
+	 * @throws IllegalInputException string contains something other than numbers between 0 and 9 (inclusive).
 	 */
 	public BigNumber(String number) {
 		// determines whether the big number inputed is negative
@@ -94,11 +94,11 @@ public class BigNumber {
 		char[] digits=number.toCharArray();
 		// create a number with ONE more decimal to account for negatives
 		for(int i=(neg?1:0);i<digits.length;i++) {
-			// if current char is a number between 0 and 9 inclusive, add to buffer
+			// if current char is a number between 0 and 9 (inclusive), add to buffer
 			if(digits[i]<='9'&&digits[i]>='0') {
 				buffer.add(digits[i]-'0');
 			}
-			// otherwise, current char is not a number between 0 and 9 inclusive
+			// otherwise, current char is not a number between 0 and 9 (inclusive)
 			// throw an exception
 			else {
 				// throw an exception and print the stack trace
@@ -122,23 +122,35 @@ public class BigNumber {
 		// normalizes the new big number
 		normalize();
 	} //end String constructor
-	
+
+	/**
+	 * Creates a big number based on another big number.
+	 * 
+	 * @author Jamie Walder
+	 * @param bn big number we are using to create another big number.
+	 */
 	public BigNumber(BigNumber bn) {
 		this.buffer=(LinkedList<Integer>)bn.buffer.clone();
-		
-	}
-	/**@author Jamie Walder
-	 * converts the given number to it's tens compliment
-	 * @param bn the number we want to convert to it's tens compliment
-	 * @return the result of the tens compliment
+	} // end big number constructor
+	
+	/**
+	 * Converts the given number to it's tens complement.
+	 * 
+	 * @author Jamie Walder
+	 * @param bn the number we want to convert to it's tens complement.
+	 * @return the result of the tens complement.
 	 */
 	public static BigNumber tensCompliment(BigNumber bn){
+		// creates an iterator that will be used to cycle through the big number
 		Iterator<Integer> it=bn.buffer.descendingIterator();
-		LinkedList<Integer> result=new LinkedList<>();
+		// new LinkedList to store the result of the tens complement
+		LinkedList<Integer> result = new LinkedList<>();
 		result.add(10-it.next());
+		// 
 		while(it.hasNext()) {
 			result.addFirst(9-it.next());
 		}
+		
 		if(result.getLast()==10) {
 			Iterator<Integer> it2=result.descendingIterator();
 			LinkedList<Integer> result2=new LinkedList<Integer>();
@@ -152,182 +164,232 @@ public class BigNumber {
 					carry++;
 					num%=10;
 				}
-
 				result2.addFirst(num);
 			}
 			return new BigNumber().setBuffer(result2);
-			//return new BigNumber(0).add(new BigNumber().setBuffer(result));
 		}
-		
 		return new BigNumber().setBuffer(result);
-
-	}
-	/**@author Jamie Walder
-	 * adds two big numbers
-	 * @param num the number to be added to this number
-	 * @return the result of adding these two number
+	} // end tensCompliment
+	
+	/**
+	 * Adds two big numbers and returns the result.
+	 * 
+	 * @author Jamie Walder
+	 * @param num the number to be added to this number.
+	 * @return the result of adding these two big numbers.
 	 */
 	public BigNumber add(BigNumber num) {
-		//add padding to buffer if one isnt big enough
-
+		// find the difference between the number of digits of both big numbers
+		// add padding to buffer if one isn't big enough
 		int diff=this.buffer.size()-num.buffer.size();
 		BigNumber thisNum=this;
 		thisNum=thisNum.addPadding(thisNum, 1);
 		num=thisNum.addPadding(num, 1);
+		// this big number has more digits - add padding to other number
 		if(diff>0) {
 			num=addPadding(num,diff);
 		}
+		// the other number has more digits - add padding to this big number
 		else {
 			thisNum=addPadding(thisNum,diff);
 		}
-
+		// using descending iterators to add digits from right to left
 		Iterator<Integer> thisIt=thisNum.buffer.descendingIterator();
 		Iterator<Integer> numIt=num.buffer.descendingIterator();
+		// new LinkedList to store result of addition
 		LinkedList<Integer> result=new LinkedList<Integer>();
+		// variable to hold the carry
 		int carry=0;
+		// continue to loop while there are digits left to add
 		while(thisIt.hasNext()) {
-
+			// add the current value of digits in
 			int tempR=thisIt.next()+numIt.next()+carry;
+			// if the carry value is greater than 0, decrement
 			if(carry>0) {
 				carry--;
 			}
+			// if result of two digit addition is greater than 10, find the value of the result mod 10
+			// and use that as the result - also, increment carry
 			if(tempR>9) {
 				carry++;
 				tempR%=10;
 			}
-
+			// add the result of the addition to the result LinkedList
 			result.addFirst(tempR);
-
-
 		}
-
+		// create a new big number and set the buffer to the result of the addition
+		// normalize the new big number and return it
 		BigNumber bn=new BigNumber().setBuffer(result);
 		bn.normalize();
 		return bn;
-	}
-	/**@author Jamie Walder
-	 * sets the buffer to a new buffer
-	 * @param buff the new buffer to be inserted
-	 * @return this BigNumber with the new buffer
+	} // end add
+	
+	/**
+	 * Sets the buffer to a new buffer and returns the big number.
+	 * 
+	 * @author Jamie Walder
+	 * @param buff the new buffer to be inserted.
+	 * @return this BigNumber with the new buffer.
 	 */
 	private BigNumber setBuffer(LinkedList<Integer> buff) {
 		this.buffer=buff;
 		return this;
-	}
-	/**@author Jamie Walder
-	 * subtract two big numbers
-	 * @param num the number to be subtracted from this number
-	 * @return the result of subtraction
+	} // end setBuffer
+	
+	/**
+	 * Subtract two big numbers and return the result.
+	 * 
+	 * @author Jamie Walder
+	 * @param num the number to be subtracted from this number.
+	 * @return the result of subtraction.
 	 */
 	public BigNumber subtract(BigNumber num) {
 		return add(tensCompliment(num));
-
-
-	}
-	/**@author Jamie Walder
-	 * added padding to the big number on the left side
-	 * @param bn1 the bignumber to be padded
-	 * @param num the amount of digits to bad it by
-	 * @return the new big number after padding
+	} // end subtract
+	
+	/**
+	 * Added padding to the big number on the left side.
+	 * 
+	 * @author Jamie Walder
+	 * @param bn1 the big number to be padded.
+	 * @param num the amount of digits to bad it by.
+	 * @return the new big number after padding.
 	 */
-	private BigNumber addPadding(BigNumber bn1,int num) {
+	private BigNumber addPadding(BigNumber bn1, int num) {
+		// if a negative number is added, make it positive
 		if(num<0) {
 			num*=-1;
 		}
 		int numAdded;
+		// checks if the big number is negative - assign numAdded a value of 9
 		if(bn1.buffer.get(0)>4) {
 			numAdded=9;
 		}
+		// otherwise, big number is positive - assign numAdded a value of 0
 		else {
 			numAdded=0;
 		}
+		// add the value of numAdded (either a 0 or a 9) num times to the beginning of the buffer
 		for(int i=0;i<num;i++) {
 			bn1.buffer.addFirst(numAdded);	
 		}
-
+		// return the big number
 		return bn1;
-	}
-	/** @author Jamie Walder
-	 * print stuff
+	} // end addPadding
+	
+	/** 
+	 * Prints a String representation of the big number.
+	 * 
+	 * @author Jamie Walder
 	 */
 	public String toString() {
 		BigNumber bn=this;
 		String result="";
+		// if number is negative, call tensCompliment on it and add a '-' sign to the String representation
 		if(buffer.get(0)>4) {
 			bn=tensCompliment(this);
 			result+="-";
 		}
+		// iterate through the buffer and add each element to the String
 		Iterator<Integer> it= bn.buffer.iterator();
-
+		// continue to add while there are elements left to add
 		while(it.hasNext()) {
 			result+=it.next();
 		}
+		// return the String representation
 		return result;
-	}
-	/**@author Jamie Walder
-	 * shift the buffer left
-	 * @param num the number of spaces to shift the buffer
+	} // end toString
+	
+	/**
+	 * Shift the buffer left a designated number of spaces.
+	 * 
+	 * @author Jamie Walder
+	 * @param num the number of spaces to shift the buffer.
 	 */
 	protected void shiftLeft(int num) {
+		// adds 0s to the end of the big number based on the value of num
 		for(int i=0;i<num;i++) {
 			buffer.addLast(0);
 		}
-	}
-	/**@author Jamie Walder
-	 * shift the buffer right
-	 * @param num the number of spaces to shift the buffer
+	} // end shiftLeft
+	
+	/**
+	 * Shift the buffer right a designated number of spaces.
+	 * 
+	 * @author Jamie Walder
+	 * @param num the number of spaces to shift the buffer.
 	 */
 	protected void shiftRight(int num) {
 		int fillnum;
+		// big number is negative, fillnum will be 9
 		if(buffer.getFirst()>4) {
 			fillnum=9;
 		}
+		// big number is positive, fillnum will be 0
 		else {
 			fillnum=0;
 		}
+		// add the value in fillnum to the front of the buffer and removes the last element num times
 		for(int i=0;i<num;i++) {
 			buffer.removeLast();
 			buffer.addFirst(fillnum);
 		}
-	}
+	} // end shiftRight
+	
 	/**
+	 * Multiplies two big numbers together and returns the result.
+	 * Uses addition and shifting.
+	 * 
 	 * @author Justin Davis
-	 * Multiplies two big numbers together
-	 * @param bigNumber Number we are multiplying our big number by
-	 * @return the product of two big numbers
+	 * @param bigNumber Number we are multiplying our big number by.
+	 * @return the product of two big numbers.
 	 */
 	public BigNumber multipy(BigNumber bigNumber) {
 		BigNumber result, tempResult;
 		result = tempResult = new BigNumber(0);
+		// the current big number
 		BigNumber thisTemp = this;
+		// number we are multiplying by
 		BigNumber thatTemp = bigNumber;
+		// variable used to keep track of sign of the result
 		boolean posResult = true;
+		// one of the big numbers if negative and one is positive - result will be negative
 		if ((this.sign() < 0 && bigNumber.sign() > 0) || (this.sign() > 0 && bigNumber.sign() < 0)) {
 			posResult = false;
 		}
+		// the current big number is negative - use the tensComplement (positive form)
 		if (this.sign() < 1) {
 			thisTemp = tensCompliment(this);
 		}
+		// the number we are multiplying is negative - use the tensComplement (positive form)
 		if (bigNumber.sign() < 1) {
 			thatTemp = tensCompliment(bigNumber);
 		}
 		int size = thatTemp.numDigits();
+		// loop for the number of digits in the big number we are multiplying by
 		for (int i = 0; i < size; i++) {
 			tempResult = new BigNumber(0);
+			// gets the ith element of the big number we are multiplying by (the ith element of the buffer)
 			int value = (int) thatTemp.getBuffer().get(i);
+			// the value of the current element is not 0
 			if (value != 0) {
+				// adds the value of this big number over and over again based on the value of the value variable
 				for (int j = 0; j < value; j++) {
 					tempResult = tempResult.add(thisTemp);
-				}
+				} // shifts the temporary result (adds 0s) based on the position of the current element
 				tempResult.shiftLeft(size - (i + 1));
 			}
+			// adds the result and tempResult together
 			result = result.add(tempResult);
 		}
+		// if one of the big numbers was negative, make the result negative
 		if (!posResult) {
 			result.negate();
 		}
+		// return the result of the multiplication
 		return result;
-	}
+	} //end multiply
+	
 	/**
 	 * @author Mantas Pileckis
 	 * Inner class for Division method
@@ -402,19 +464,19 @@ public class BigNumber {
 			int counter = 0; //Counter to populate result set
 			BigNumber original  = new BigNumber(bigNumber.toString()); // original value for number that we are dividing bigNumber by
 			BigNumber tempDivisor  = new BigNumber(bigNumber.toString()); //Value that we are going to be modifying thruough each iteration
-			
+
 			//While current remainder is EQUAL or MORE than the original Divisor
 			//AND current remainder - the original divisor doesn't return negative. -> loop because there are still numbers remaining to divide.
 			while(remainder.compareTo(original) == 0 || remainder.compareTo(original) == 1 && ((new BigNumber(remainder.toString()).subtract(original)).sign() == 1) ) {
-				
+
 				//tempDivisor  = new BigNumber(bigNumber.toString());
 				//Get the difference of number digits (remainder - divisor) to determine shift.
 				ammount = (remainder.numDigits()-tempDivisor.numDigits());
 				tempDivisor.shiftLeft(ammount);
-				
+
 				//if remainder - divisor == negative, that means we assumed that divisor is too big, decrement the shift by 1.
 				if( ((new BigNumber(remainder.toString()).subtract(tempDivisor)).sign() == -1)  ) {
-					
+
 					//Decrement the shift by 1.
 					tempDivisor  = new BigNumber(bigNumber.toString());
 					ammount = (remainder.numDigits()-tempDivisor.numDigits());
@@ -423,14 +485,14 @@ public class BigNumber {
 				//While its a remainder - divisor is a positive number, keep subtracting and increment the counter.
 				//Use counter to populate the result after iteration is done.
 				while(((new BigNumber(remainder.toString()).subtract(tempDivisor)).sign() == 1)) {
-					
+
 					remainder = remainder.subtract(tempDivisor);
 					counter++;		
 				}
 				//Add the counter to the result buffer to determine the quotient step by step.
 				result.buffer.add(counter);
 				counter = 0;
-				
+
 				//If we are done, pad the result with 0's according the the number of digits that we shifted previously.
 				if(remainder.compareTo(new BigNumber(0)) == -1) {
 					result.shiftLeft(ammount-1);
@@ -451,64 +513,75 @@ public class BigNumber {
 	}
 
 	/**
-	 * Efficiency black hole...
+	 * Estimates the square root of a big number using the Babylonian method and returns it.
+	 * 
 	 * @author Mantas Pileckis
+	 * @return the result of the square root estimation.
 	 */
 	public BigNumber squareRoot() {
 		BigNumber thisNum = new BigNumber(this);
 		//find square root
 		BigNumber root=new BigNumber(thisNum);
 		BigNumber prev=new BigNumber(thisNum);
+		// number of digits is greater than 1
 		if(this.numDigits()>1) {
+			// shift the value of root to the right
 			root.shiftRight(thisNum.numDigits()/2);
 		}
+		// number of digits in 1
 		else {
-			//this needs to be updated
+			// finds the square root of a number between 0 and 9 (inclusive)
+			//TODO - this needs to be updated!!!!!!!!
 			int newRoot = (int)Math.sqrt(Integer.parseInt(root.toString()));
 			root = new BigNumber("" + newRoot);
 		}
+		// normalize value stored in root
 		root.normalize();
+		// create constants
 		final BigNumber two=new BigNumber("2");
 		final BigNumber zero=new BigNumber("0");
 		final BigNumber one=new BigNumber("1");
+		// loops until the value of two successions of root estimations are the same
 		while(!root.equals(prev)) {
 			prev=new BigNumber(root);
+			// value of root is not 0, perform estimation
 			if(!root.equals(zero))
-			root=root.add(thisNum.altDivide(root)).altDivide(two);
-		
+				root=root.add(thisNum.altDivide(root)).altDivide(two);
 		}
+		// returns the estimated square root
 		return root;
-	}
+	} //end squareRoot
+	
 	public Set<BigNumber> factors() {
 		final BigNumber two=new BigNumber("2");
 		final BigNumber zero=new BigNumber("0");
 		final BigNumber one=new BigNumber("1");
 		BigNumber thisNum = new BigNumber(this);
 		BigNumber root=squareRoot();
-		
+
 		HashSet result=new HashSet<BigNumber>();
-		
+
 		while(!root.equals(zero)) {
 			BigNumber[] qr=thisNum.altDivideRemainder(root);
 			if(qr[1].equals(zero)&&!root.equals(one)) {
 				result.add(root);
 				result.add(qr[0]);
 				root=root.squareRoot();
-				
-				
+
+
 			}
 			else {
 				root=root.subtract(one);
-			
+
 			}
 			System.out.println(root);
 
 		}
-		
+
 		//TODO finish it 
 		return result;
-		
-		
+
+
 	}
 
 	private void normalize() {
@@ -627,7 +700,7 @@ public class BigNumber {
 		BigNumber thisNum=new BigNumber(this);//copy this number
 		BigNumber otherNum=new BigNumber(bn);//copy the number coming in
 		BigNumber qoutient=new BigNumber();//create a resulting qoutient 
-		
+
 		if(otherNum.sign()==-1) {//flip the other number if it is negative
 			otherNum.buffer.addFirst(9);
 			otherNum=tensCompliment(otherNum);
