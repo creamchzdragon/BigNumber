@@ -42,7 +42,8 @@ public class InputDriver {
 		   
 			line = scanner.nextLine();
 		   }
-		System.out.println(new BigNumber("2168211218041261").factors());
+		System.out.println("Factors for 117852727: " + new BigNumber("117852727").factors());
+		System.out.println("Factors for 2168211218041261: " + new BigNumber("2168211218041261").factors());
 		}
 	
 		

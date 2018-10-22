@@ -306,6 +306,10 @@ public class BigNumber {
 		if(buffer.get(0)>4) {
 			bn=tensCompliment(this);
 			result+="-";
+			// removes excess 0 for negative number resulting from tens complement
+			if (bn.buffer.getFirst() == 0) {
+				bn.buffer.removeFirst();
+			}
 		}
 		// iterate through the buffer and add each element to the String
 		Iterator<Integer> it= bn.buffer.iterator();
@@ -405,12 +409,7 @@ public class BigNumber {
 		}
 		// return the result of the multiplication
 		return result;
-
 	}
-	
-
-
-	
 	
 	/**
 	 * Estimates the square root of a big number using the Babylonian method and returns it.
@@ -477,15 +476,11 @@ public class BigNumber {
 				result.add(root);
 				result.add(qr.getQuotient());
 				break;
-				
-				
-				
-
 			}
 			else {
 				root=root.subtract(one);
 			}
-			System.out.println(root);
+			//System.out.println(root); for testing purposes only
 		}
 		// returns a hashset of factors
 		return result;
@@ -619,12 +614,7 @@ public class BigNumber {
 	public int numDigits() {
 		return this.buffer.size();
 	}
-	public String toString2() {
-		return buffer.toString();
-	}
-	public LinkedList getBuffer(){
-		return buffer;
-	}
+
 	/**
 	 * @author Mantas Pileckis, Jamie Walder
 	 * Divides two bigNumbers
@@ -670,8 +660,6 @@ public class BigNumber {
 		qoutient.normalize();
 		nums[0]=qoutient;
 		nums[1]=thisNum;
-
-		
 		return new DivisionReturn(nums[1],nums[0]);
 	}
 	
