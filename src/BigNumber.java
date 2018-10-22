@@ -264,7 +264,7 @@ public class BigNumber {
 	 * @param bigNumber Number we are multiplying our big number by
 	 * @return the product of two big numbers
 	 */
-	public BigNumber multipy(BigNumber bigNumber) {
+	public BigNumber multiply(BigNumber bigNumber) {
 		BigNumber result, tempResult;
 		result = tempResult = new BigNumber(0);
 		BigNumber thisTemp = this;
@@ -296,128 +296,10 @@ public class BigNumber {
 		}
 		return result;
 	}
-	/**
-	 * @author Mantas Pileckis
-	 * Inner class for Division method
-	 */
-	public class DivisionReturn {
-		BigNumber remainder;
-		BigNumber quotient;
-		/**
-		 * Constructor for Division Return
-		 * @param remainder The remainder post division
-		 * @param quotient The quotient post division
-		 * @param
-		 */
-		public DivisionReturn(BigNumber remainder, BigNumber quotient) {
-			this.remainder = remainder;
-			this.quotient = quotient;
-		}
-		/**
-		 * Method to get the remainder
-		 * @return The remainder post division
-		 */
-		public BigNumber getMod() {
-			return remainder;
-		}
-		/**
-		 * Method to get the quotient
-		 * @return the quotient post division
-		 */
-		public BigNumber getQuotient() {
-			return quotient;
-		}
-	}
+	
 
-	/**
-	 * @author Mantas Pileckis
-	 * Divides two bigNumbers
-	 * @param bigNumber Number we are dividing our big number by
-	 * @return 
-	 */
-	public DivisionReturn divide(BigNumber bigNumber) {
-		DivisionReturn temp = null; //temp holder for new DivisionReturn Object 
-		BigNumber remainder = this; //base case for remainder being 0
-		boolean negative = false; //boolean flag to check if any numbers were negative
-
-		//Check for negative, if so negate it
-		//And trigger the negative flag
-		if(bigNumber.sign() == -1) {
-			bigNumber.negate();
-			negative = true;
-		}
-
-		//check for negative, if so negate it
-		//And trigger the negative flag
-		if(this.sign() == -1) {
-			this.negate();
-			negative = true;
-		}
-		//If numbers are the same, return default case
-		if(this.compareTo(bigNumber) == 0) {
-			temp = new DivisionReturn(new BigNumber(0), new BigNumber(1));
-
-		}
-
-		//if the input is larger than the bigNumber, return original value as remainder (mod) and base case for quotient
-		else if (this.compareTo(bigNumber) == -1) {
-			temp = new DivisionReturn(this, new BigNumber(0));
-		}
-
-		else {
-			BigNumber result = new BigNumber(0); //New bigNumber object to keep track of the result
-			int ammount = 0; //Value used to keep track of shifts through the iteration
-			int counter = 0; //Counter to populate result set
-			BigNumber original  = new BigNumber(bigNumber.toString()); // original value for number that we are dividing bigNumber by
-			BigNumber tempDivisor  = new BigNumber(bigNumber.toString()); //Value that we are going to be modifying thruough each iteration
-			
-			//While current remainder is EQUAL or MORE than the original Divisor
-			//AND current remainder - the original divisor doesn't return negative. -> loop because there are still numbers remaining to divide.
-			while(remainder.compareTo(original) == 0 || remainder.compareTo(original) == 1 && ((new BigNumber(remainder.toString()).subtract(original)).sign() == 1) ) {
-				
-				//tempDivisor  = new BigNumber(bigNumber.toString());
-				//Get the difference of number digits (remainder - divisor) to determine shift.
-				ammount = (remainder.numDigits()-tempDivisor.numDigits());
-				tempDivisor.shiftLeft(ammount);
-				
-				//if remainder - divisor == negative, that means we assumed that divisor is too big, decrement the shift by 1.
-				if( ((new BigNumber(remainder.toString()).subtract(tempDivisor)).sign() == -1)  ) {
-					
-					//Decrement the shift by 1.
-					tempDivisor  = new BigNumber(bigNumber.toString());
-					ammount = (remainder.numDigits()-tempDivisor.numDigits());
-					tempDivisor.shiftLeft(ammount-1);
-				}
-				//While its a remainder - divisor is a positive number, keep subtracting and increment the counter.
-				//Use counter to populate the result after iteration is done.
-				while(((new BigNumber(remainder.toString()).subtract(tempDivisor)).sign() == 1)) {
-					
-					remainder = remainder.subtract(tempDivisor);
-					counter++;		
-				}
-				//Add the counter to the result buffer to determine the quotient step by step.
-				result.buffer.add(counter);
-				counter = 0;
-				
-				//If we are done, pad the result with 0's according the the number of digits that we shifted previously.
-				if(remainder.compareTo(new BigNumber(0)) == -1) {
-					result.shiftLeft(ammount-1);
-				}
-			}
-			//Reset the tempDivisor
-			tempDivisor  = new BigNumber(bigNumber.toString());
-			// If negative flag is triggered, invert the result.
-			if(negative) {
-				result.negate();
-			}
-			//Instantiate DivisionReturn object, to store the remainder and the quotient
-			temp = new DivisionReturn(remainder, result);
-
-
-		}
-		return temp;
-	}
-
+	
+	
 	/**
 	 * Efficiency black hole...
 	 * @author Mantas Pileckis
@@ -436,7 +318,7 @@ public class BigNumber {
 		while(!root.equals(prev)) {
 			prev=new BigNumber(root);
 			if(!root.equals(zero))
-			root=root.add(thisNum.altDivide(root)).altDivide(two);
+			root=root.add(thisNum.divide(root).getQuotient()).divide(two).getQuotient();
 		
 		}
 		return root;
@@ -451,11 +333,11 @@ public class BigNumber {
 		HashSet result=new HashSet<BigNumber>();
 		
 		while(!root.equals(zero)) {
-			BigNumber[] qr=thisNum.altDivideRemainder(root);
-			if(qr[1].equals(zero)&&!root.equals(one)) {
+			DivisionReturn qr=thisNum.divide(root);
+			if(qr.getMod().equals(zero)&&!root.equals(one)) {
 				result.add(root);
-				result.add(qr[0]);
-				root=root.squareRoot();
+				result.add(qr.getQuotient());
+				break;
 				
 				
 				
@@ -585,11 +467,18 @@ public class BigNumber {
 	public LinkedList getBuffer(){
 		return buffer;
 	}
-	private BigNumber[] altDivideRemainder(BigNumber bn) {
+	/**
+	 * @author Mantas Pileckis, Jamie Walder
+	 * Divides two bigNumbers
+	 * @param bigNumber Number we are dividing our big number by
+	 * @return 
+	 */
+	public DivisionReturn divide(BigNumber bn) {
 		BigNumber thisNum=new BigNumber(this);//copy this number
 		BigNumber otherNum=new BigNumber(bn);//copy the number coming in
 		BigNumber qoutient=new BigNumber();//create a resulting qoutient 
-		
+		thisNum.normalize();
+		otherNum.normalize();
 		if(otherNum.sign()==-1) {//flip the other number if it is negative
 			otherNum.buffer.addFirst(9);
 			otherNum=tensCompliment(otherNum);
@@ -623,13 +512,41 @@ public class BigNumber {
 		qoutient.normalize();
 		nums[0]=qoutient;
 		nums[1]=thisNum;
-		return nums;
+		
+		return new DivisionReturn(nums[1],nums[0]);
 	}
-	public BigNumber mod(BigNumber bn) {
-		return altDivideRemainder(bn)[1];
-	}
-	public BigNumber altDivide(BigNumber bn) {
-		return altDivideRemainder(bn)[0];
+	
+	/**
+	 * @author Mantas Pileckis
+	 * Inner class for Division method
+	 */
+	public class DivisionReturn {
+		BigNumber remainder;
+		BigNumber quotient;
+		/**
+		 * Constructor for Division Return
+		 * @param remainder The remainder post division
+		 * @param quotient The quotient post division
+		 * @param
+		 */
+		public DivisionReturn(BigNumber remainder, BigNumber quotient) {
+			this.remainder = remainder;
+			this.quotient = quotient;
+		}
+		/**
+		 * Method to get the remainder
+		 * @return The remainder post division
+		 */
+		public BigNumber getMod() {
+			return remainder;
+		}
+		/**
+		 * Method to get the quotient
+		 * @return the quotient post division
+		 */
+		public BigNumber getQuotient() {
+			return quotient;
+		}
 	}
 
 }

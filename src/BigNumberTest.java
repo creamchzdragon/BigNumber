@@ -1,5 +1,7 @@
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Random;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +35,7 @@ class BigNumberTest {
 		//test subtract
 				for(long i=-500;i<500;i++) {
 					for(long j=-500;j<500;j++) {
-						assert(i*j==Long.parseLong(new BigNumber(i).multipy(new BigNumber(j)).toString()));
+						assert(i*j==Long.parseLong(new BigNumber(i).multiply(new BigNumber(j)).toString()));
 					}
 				}
 	}
@@ -46,7 +48,7 @@ class BigNumberTest {
 							continue;
 						}
 						System.out.println("div i:"+i+" j:"+j);
-						assert(i/j==Long.parseLong(new BigNumber(i).altDivide(new BigNumber(j)).toString()));
+						assert(i/j==Long.parseLong(new BigNumber(i).divide(new BigNumber(j)).getQuotient().toString()));
 					}
 				}
 	}
@@ -59,9 +61,26 @@ class BigNumberTest {
 							continue;
 						}
 						System.out.println("mod i:"+i+" j:"+j);
-						assert(((Long)i%j)==Long.parseLong(new BigNumber(i).mod(new BigNumber(j)).toString()));
+						assert(((Long)i%j)==Long.parseLong(new BigNumber(i).divide(new BigNumber(j)).getMod().toString()));
 					}
 				}
+	}
+	@Test
+	void testRandos() {
+		Random r=new Random();
+		
+		for(int i=0;i<1000;i++) {
+			long long1=r.nextInt();
+			long long2=r.nextInt();
+			BigNumber num1=new BigNumber(long1);
+			BigNumber num2=new BigNumber(long2);
+			System.out.println(long1+" "+long2);
+			assert(long1+long2==Long.parseLong(num1.add(num2).toString()));
+			assert(long1-long2==Long.parseLong(num1.subtract(num2).toString()));
+			assert(long1*long2==Long.parseLong(num1.multiply(num2).toString()));
+			assert(long1/long2==Long.parseLong(num1.divide(num2).getQuotient().toString()));
+			assert(long1%long2==Long.parseLong(num1.divide(num2).getMod().toString()));
+		}
 	}
 	
 	
