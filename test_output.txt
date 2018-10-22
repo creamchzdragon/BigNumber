@@ -1,0 +1,45 @@
+Enter two BigNumbers, on separate lines, or hit Enter to terminate
+-534
+Enter a second BigNumber
+1002
+Sum: 468
+Sum: 468
+First - Second: -1536
+Second - First: 1536
+Product: -535068
+Product: -535068
+First / Second: 0
+Second / First: -1
+First % Second: -534
+Second % First: 468
+
+423
+Enter a second BigNumber
+-1
+Sum: 422
+Sum: 422
+First - Second: 424
+Second - First: -424
+Product: -423
+Product: -423
+First / Second: -423
+Second / First: 0
+First % Second: 0
+Second % First: -1
+
+2396
+Enter a second BigNumber
+2396
+Sum: 4792
+Sum: 4792
+First - Second: 0
+Second - First: 0
+Product: 05740816
+Product: 05740816
+First / Second: 1
+Second / First: 1
+First % Second: 0
+Second % First: 0
+
+Factors for 117852727: [10859, 10853]
+Factors for 2168211218041261: [46564013, 46564097]
