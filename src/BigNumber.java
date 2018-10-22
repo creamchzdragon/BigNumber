@@ -6,7 +6,9 @@ import java.util.Set;
 /**
  * A class that can contain crazy big numbers and perform basic arithmetic operations.
  * 
- * @authors Jamie Walder, Mantas Pileckis, Justin Davis
+ * @author Jamie Walder
+ * @author Mantas Pileckis
+ * @author Justin Davis
  * 
  */
 public class BigNumber {
@@ -62,17 +64,18 @@ public class BigNumber {
 
 	/**
 	 * Creates a buffer with a specified number of digits.
+	 * If numberOfDigits is less than 0, fillNum less than 0, or fillNum greater than 10 the user is notified of an error.
 	 * 
 	 * @author Jamie Walder
 	 * @param numberOfDigits the number of digits the number will have.
-	 * @throws IllegalInputException numberOfDigits is less than 0, fillNum < 0, or fillNum > 10.
+	 * @param fillNum the int that will be used to fill the buffer.
 	 */
 	public BigNumber(int numberOfDigits, int fillNum) {
 		// one of the parameters has invalid input
 		if (numberOfDigits < 0 || fillNum < 0 || fillNum > 10) {
 			try {
-				throw new IllegalInputException("One input is invalid.");
-			} catch (IllegalInputException e) {
+				throw new IllegalArgumentException("One input is invalid.");
+			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			}
 		}
@@ -89,7 +92,6 @@ public class BigNumber {
 	 * 
 	 * @author Jamie Walder
 	 * @param number the string of the number that will be inputed.
-	 * @throws IllegalInputException string contains something other than numbers between 0 and 9 (inclusive).
 	 */
 	public BigNumber(String number) {
 		// determines whether the big number inputed is negative
@@ -416,7 +418,6 @@ public class BigNumber {
 		 * Constructor for Division Return
 		 * @param remainder The remainder post division
 		 * @param quotient The quotient post division
-		 * @param
 		 */
 		public DivisionReturn(BigNumber remainder, BigNumber quotient) {
 			this.remainder = remainder;
@@ -439,10 +440,11 @@ public class BigNumber {
 	}
 
 	/**
-	 * @author Mantas Pileckis
 	 * Divides two bigNumbers
+	 * 
+	 * @author Mantas Pileckis
 	 * @param bigNumber Number we are dividing our big number by
-	 * @return 
+	 * @return an instance of DivisionReturn which stores both result of division and remainder.
 	 */
 	public DivisionReturn divide(BigNumber bigNumber) {
 		DivisionReturn temp = null; //temp holder for new DivisionReturn Object 
