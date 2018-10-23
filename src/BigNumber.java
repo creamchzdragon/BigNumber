@@ -618,8 +618,8 @@ public class BigNumber {
 	/**
 	 * @author Mantas Pileckis, Jamie Walder
 	 * Divides two bigNumbers
-	 * @param bigNumber Number we are dividing our big number by
-	 * @return 
+	 * @param bn Number we are dividing our big number by
+	 * @return DivisionReturn object containing Mod and Quotient
 	 */
 	public DivisionReturn divide(BigNumber bn) {
 		BigNumber thisNum=new BigNumber(this);//copy this number
@@ -674,7 +674,6 @@ public class BigNumber {
 		 * Constructor for Division Return
 		 * @param remainder The remainder post division
 		 * @param quotient The quotient post division
-		 * @param
 		 */
 		public DivisionReturn(BigNumber remainder, BigNumber quotient) {
 			this.remainder = remainder;
